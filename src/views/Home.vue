@@ -1,19 +1,23 @@
 <template>
     <div class="container">
+        <img class="logo" src="/images/logo.svg"/>
         <h1>👋 Welcome to MyKeys!</h1>
         <span class="separator transparent"></span>
-        <p>MyKeys is a simple webapp to <b>manage your passwords</b>. It works uploading and downloading an <b>encrypted file</b>, so the webapp does not stores any data in any server. Everything happens in your browser.</p>
+        <p>MyKeys is a simple web app to <b>manage your passwords</b>. It works by uploading and downloading an <b>encrypted file</b>, so the web app does not store any data on any server. Everything happens in your browser.</p>
         <span class="separator"></span>
 
         <div class="menu">
             <p>To start, select your encrypted file o create a new one:</p>
             <div class="row">
                 <div class="five columns">
-                    <button class="button-primary" @click.prevent="openUploader">Upload file</button>
-                    <input type="file" ref="file" style="display: none;" @change="loadFile"/>
+                    <button class="button-primary" @click.prevent="loadFile">Upload file</button>
                 </div>
-                <div class="two columns"><p style="padding-top: 4px">or</p></div>
-                <div class="five columns"><button @click="createFile">Create new file</button></div>
+                <div class="two columns">
+                    <p style="padding-top: 4px">or</p>
+                </div>
+                <div class="five columns">
+                    <button @click="createFile">Create new file</button>
+                </div>
             </div>
         </div>
     </div>
@@ -26,27 +30,14 @@ import EventBus from '@/lib/eventbus';
 export default {
     name: 'Home',
     methods: {
-        openUploader() {
-            const input = this.$refs.file;
-            input.click();
-        },
-        async loadFile(event) {
+        async loadFile() {
             try {
-                if (event.target.files.length === 0) throw 'No file selected';
-
-                const file = event.target.files[0];
-                const encrypted = await FileAPI.read(file);
-                
-                const password = prompt('Enter your password.');
-                if (password !== null) {
-                    const data = await FileAPI.decrypt(encrypted, password);
-                    
-                    this.$router.push({ name: 'manager', params: { data }});
-                } else throw 'You must to enter a password.'
+                const encrypted = await FileAPI.open();
+                const password = await FileAPI.requestPassword();
+                const data = await FileAPI.decrypt(encrypted, password);
+                this.$router.push({ name: 'manager', params: { data }});
             } catch (error) {
-                this.$refs.file.value = '';
-                console.error(error);
-                EventBus.$emit('error', 'Something was wrong... Have you entered the correct password?');
+                EventBus.$emit('error', 'Something was wrong... ' + error);
             }
         },
         createFile() {
@@ -66,6 +57,11 @@ export default {
     .container {
         text-align: center; 
         margin-top: 10vh;
+    }
+
+    .logo { 
+        max-height: 10vh;
+        margin: 16px 0;
     }
     
     .separator {

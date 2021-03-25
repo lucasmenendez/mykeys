@@ -23,23 +23,12 @@ export default {
     methods: {
         async download() {
             try {
-                const password = prompt('Enter your password:');
-                if (password) {
-                    EventBus.$emit('info', 'Encryping content and downloading...');
-                    const encrypted = await FileAPI.encrypt(this.data, password);
-                    this.save(encrypted);
-                } else EventBus.$emit('error', 'You must to enter a password.');
+                const password = await FileAPI.requestPassword();
+                const encrypted = await FileAPI.encrypt(this.data, password);
+                await FileAPI.save(encrypted);
             } catch (error) {
-                console.error(error);
-                EventBus.$emit('error', 'Something was wrong generating the file... ;(');
+                EventBus.$emit('error', 'Something was wrong... ' + error);
             }
-        },
-        save(content) {
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            this.$refs.download.setAttribute('href', url);
-            this.$refs.download.setAttribute('download', 'passwords.txt');
-            this.$refs.download.click();
         }
     }
 }
