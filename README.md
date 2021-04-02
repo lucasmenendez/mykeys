@@ -11,3 +11,7 @@ MyKeys is a simple web app to manage your passwords. It works by uploading and d
 ---
 
 It works with [Vue.js (v2)](https://vuejs.org/), [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) and [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API).
+
+#### App components relations
+
+<img src="https://raw.githubusercontent.com/lucasmenendez/mykeys/main/public/images/components-relations.svg">
