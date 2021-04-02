@@ -22,8 +22,9 @@
             <tbody>
                 <Row 
                     v-for="(item, index) in filteredItems" 
-                    :key="index" 
-                    :data="item" 
+                    :key="index"
+                    :data="item"
+                    @update="newItem => item = newItem"
                     @delete="items.splice(index, 1)"/>
             </tbody>
         </table>

@@ -1,27 +1,27 @@
 <template>
     <tr class="credential">
         <Cell 
-            :content="data.alias" 
+            :content="idata.alias" 
             :editable="edit" 
-            @change="val => data.alias = val"/>
+            @change="update('alias', idata.alias)"/>
 
         <Cell 
-            :content="data.username" 
+            :content="idata.username" 
             :copyable="true" 
             :editable="edit" 
-            @change="val => data.username = val"/>
+            @change="update('username', idata.username)"/>
 
         <Cell 
-            :content="data.password" 
+            :content="idata.password" 
             :copyable="true" 
             :hidden="true" 
             :editable="edit"
-            @change="val => data.password = val"/>
+            @change="update('password', idata.password)"/>
         
         <Cell 
-            :content="data.description" 
+            :content="idata.description" 
             :editable="edit"
-            @change="val => data.description = val"/>
+            @change="update('description', idata.description)"/>
         
         <td>
             <button class="action" @click="edit = !edit">{{ edit ? 'Save': 'Edit' }}</button>
@@ -42,11 +42,16 @@ export default {
         }
     },
     data: () => ({
+        idata: {},
         edit: false
     }),
+    created() {
+        this.idata = this.data;
+    },
     methods: {
-        log(i) {
-            console.log(i);
+        update(attr, val) {
+            this.idata[attr] = val;
+            this.$emit('update', this.idata);
         }
     },
     components: {
