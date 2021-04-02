@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <img class="logo" src="/images/logo.svg"/>
+        <img class="logo" src="images/logo.svg"/>
         <h1>👋 Welcome to MyKeys!</h1>
         <span class="separator transparent"></span>
         <p>MyKeys is a simple web app to <b>manage your passwords</b>. It works by uploading and downloading an <b>encrypted file</b>, so the web app does not store any data on any server. Everything happens in your browser.</p>
