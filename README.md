@@ -14,4 +14,4 @@ It works with [Vue.js (v2)](https://vuejs.org/), [Web Crypto API](https://develo
 
 #### App components relations
 
-<img src="https://raw.githubusercontent.com/lucasmenendez/mykeys/main/public/images/components-relations.png">
+<img src="https://raw.githubusercontent.com/lucasmenendez/mykeys/main/public/images/components-relations.svg">
