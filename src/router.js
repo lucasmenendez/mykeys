@@ -11,7 +11,7 @@ const routes = [
         component: Home
     },
     {
-        path: '/manager',
+        path: '/m',
         name: 'manager',
         props: true,
         meta: { title: 'My Passwords' },
@@ -20,6 +20,32 @@ const routes = [
             const obj = to.params.data || null;
 
             if (Array.isArray(obj) && obj.length > 0) next();
+            else next({ name: 'home' });
+        }
+    },
+    {
+        path: '/d/:blob+',
+        name: 'decrypt',
+        props: true,
+        meta: { title: 'Decrypt' },
+        component: () => import(/* webpackChunkName: "decrypt" */ '@/views/Decrypt'),
+        beforeEnter: (to, _, next) => {
+            const blob = to.params.blob || null;
+
+            if (blob.length > 0) next();
+            else next({ name: 'home' });
+        }
+    },
+    {
+        path: '/e',
+        name: 'encrypt',
+        props: true,
+        meta: { title: 'Encrypt' },
+        component: () => import(/* webpackChunkName: "encrypt" */ '@/views/Encrypt'),
+        beforeEnter: (to, _, next) => {
+            const data = to.params.data || null;
+
+            if (Array.isArray(data) && data.length > 0) next();
             else next({ name: 'home' });
         }
     }

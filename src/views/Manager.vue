@@ -1,15 +1,17 @@
 <template>
-    <div ref="table" class="container extra-width">
-        <div class="row">
-            <div class="column one-half">
-                <SearchBox @change="val => this.needle = val"/>
-            </div>
-            <div class="column one-half" style="text-align: right;">
-                <Download :data="items"/>
-            </div>
+    <div>
+        <div>
+            <Input 
+                placeholder="Type a query to filter the list..."
+                :bordered="true"
+                @input="n => this.needle = n" />
+            
+            <Button @click="$router.push({ name: 'encrypt', params: { data } })">
+                Encrypt and store
+            </Button>
         </div>
 
-        <table class="credentials u-full-width">
+        <table>
             <thead>
                 <tr>
                     <th>Alias</th>
@@ -20,24 +22,45 @@
                 </tr>
             </thead>
             <tbody>
-                <Row 
-                    v-for="(item, index) in filteredItems" 
-                    :key="index"
-                    :data="item"
-                    @update="newItem => item = newItem"
-                    @delete="items.splice(index, 1)"/>
+                <tr v-for="(i, index) in filteredItems" :key="index">
+                    <td>
+                        <Input 
+                            :val="i.alias" 
+                            @change="d => i.alias = d"/>
+                    </td>
+                    <td>
+                        <Input :val="i.username" @change="d => i.username = d"/>
+                        <CopyButton :content="i.username"/>
+                    </td>
+                    <td>
+                        <Input :val="i.password" @change="d => i.password = d"/>
+                        <CopyButton :content="i.password"/>
+                    </td>
+                    <td>
+                        <Input 
+                            :val="i.description" 
+                            @change="d => i.description = d"/>
+                    </td>
+                    <td>
+                        <Button @click="items.splice(index, 1)">
+                            <i class="fi fi-trash"></i>
+                        </Button>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
-        <AddNew @click="items.push({})" />
+        <Button @click="items.push({})">
+            <i class="fi fi-plus-a"></i> Add new password
+        </Button>
     </div>
 </template>
 
 <script>
-import SearchBox from '@/components/SearchBox';
-import Download from '@/components/Download';
-import Row from '@/components/Row';
-import AddNew from '@/components/AddNew';
+import Input from '@/elements/Input';
+import Button from '@/elements/Button';
+
+import CopyButton from '@/components/CopyButton';
 
 export default {
     name: 'Manager',
@@ -59,43 +82,10 @@ export default {
             });
         }
     },
-    created() {
-        window.onbeforeunload = () => 'Are you sure? Data will be deleted...';
-    },
     mounted() {
         if (!Array.isArray(this.data) || this.data.length === 0) this.$router.push({ name: 'home' });
         this.items = this.data;
     },
-    components: { SearchBox, Download, Row, AddNew }
+    components: { Input, Button, CopyButton }
 }
 </script>
-
-<style scoped>
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin-top: 10vh;
-}
-
-.credentials {
-    margin-bottom: 5vh;
-}
-
-.credentials thead th {
-    background: white;
-    position: sticky;
-    top: 0;
-    padding-top: 5vh;
-}
-
-.credentials thead th:after {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 1px;
-    background: #999;
-}
-</style>

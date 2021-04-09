@@ -1,0 +1,38 @@
+<template>
+    <div>
+        <Input 
+            type="password" 
+            placeholder="Type your master password"
+            :bordered="true" 
+            @input="p => this.password = p" />
+            
+        <Button @click="decrypt">Decrypt</Button>
+    </div>
+</template>
+
+<script>
+import FileAPI from '@/lib/file';
+
+import Input from '@/elements/Input';
+import Button from '@/elements/Button';
+
+export default {
+    name: 'Decrypt',
+    props: {
+        blob: {
+            type: String,
+            required: true
+        }
+    },
+    data: () => ({
+        password: ''
+    }),
+    methods: {
+        async decrypt() {
+            const data = await FileAPI.decrypt(this.blob, this.password);
+            this.$router.push({ name: 'manager', params: { data } })
+        }
+    },
+    components: { Input, Button }
+}
+</script>

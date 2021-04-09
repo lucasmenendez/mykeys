@@ -1,76 +1,35 @@
 const Crypto = window.crypto;
-const fileHandleOps = {
-    multiple: false,
-    excludeAcceptAllOption: true,
-    types: [{
-        accept: {'text/plain': ['.txt']},
-    }],
-};
 
 class FileAPI {
-    static async open() {
-        const [ handle ] = await window.showOpenFilePicker(fileHandleOps)
-            .catch(err => {
-                console.error(err);
-                throw 'Error selecting the file.';
-            });
-
-        const file = await handle.getFile()
-            .catch(err => {
-                console.error(err);
-                throw 'Error selecting the file.';
-            });
-        return await file.text()
-            .catch(err => {
-                console.error(err);
-                throw 'Error reading the file.';
-            });
-    }
-
-    static async save(content) {
-        const handle = await window.showSaveFilePicker(fileHandleOps)
-            .catch(err => {
-                console.error(err);
-                throw 'Error selecting the file.';
-            });
-
-        const writable = await handle.createWritable()
-            .catch(err => {
-                console.error(err);
-                throw 'Error creating the descriptor to write the file.';
-            });
-
-        await writable.write(content)
-            .catch(err => {
-                console.error(err);
-                throw 'Error writing the file.';
-            });
-
-        await writable.close()
-            .catch(err => {
-                console.error(err);
-                throw 'Error closing the descriptor of the file.';
-            });
-    }
-
-    static requestPassword(msg = 'Enter your password:', minLenght = 8) {
-        const rgx = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-        
-        return new Promise((resolve, reject) => {
-            const password = prompt(msg);
-            if (password === null) reject('You must to type a password.');
-            else if (password.length < minLenght) reject('The password is too short.');
-            else if (!rgx.test(password)) reject('The password must cointain one letter and one number at least.');
-            resolve(password);
-        });
+    static create() {
+        return [{
+            "alias": "Example credentials",
+            "username": "myusername",
+            "password": "mys3cr3tp4ssw0rd",
+            "description": "http://myservi.ce/login"
+        }];
     }
 
     static _dump(obj) {
-        return JSON.stringify(obj);
+        const temp = obj.map(item => ({
+            a: item.alias,
+            u: item.username,
+            p: item.password,
+            d: item.description
+        }));
+
+        return JSON.stringify(temp);
     }
 
     static _parse(str) {
-        return JSON.parse(str);
+        const temp = JSON.parse(str);
+
+        return temp.map(item => ({
+            alias: item.a,
+            username: item.u,
+            password: item.p,
+            description: item.d
+        }));
     }
 
     static _encode(content) {
@@ -135,7 +94,7 @@ class FileAPI {
         const plainBuffer = await Crypto.subtle.decrypt(alg, key, ctUint8)
             .catch(err => {
                 console.error(err);
-                throw 'Error encrypting the content.';
+                throw 'Error decrypting the content.';
             });
 
         const plainText = new TextDecoder().decode(plainBuffer);
