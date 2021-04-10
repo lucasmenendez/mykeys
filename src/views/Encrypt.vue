@@ -1,17 +1,24 @@
 <template>
-    <div>
+    <form action="" @submit.prevent="encrypt">
         <Input 
             type="password" 
             placeholder="Type your master password"
             :bordered="true" 
-            @input="p => this.password = p" />
+            minlength="8"
+            pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
+            @change="p => this.password = p" 
+            @error="log"/>
 
-        <Button @click="encrypt">Encrypt</Button>
+        <Button type="submit">
+            <i class="fi fi-locked"></i>
+            Encrypt!
+        </Button>
+
         <div v-if="content">
-            <p>Save the following link as a bookmark to store your encrypted passwords.</p>
+            <p>Share or save the following link as a bookmark to use your encrypted passwords later!</p>
             <router-link :to="{name: 'decrypt', params: { blob: this.content }}">https://lucasmenendez.github.io/mykeys/d/{{ content }}</router-link>
         </div>
-    </div>
+    </form>
 </template>
 
 <script>
@@ -29,11 +36,15 @@ export default {
         }
     },
     data: () => ({
-        password: '',
+        password: null,
         content: ''
     }),
     methods: {
+        log(e) {
+            console.log(e);
+        },
         async encrypt() {
+            console.log(this.password)
             this.content = await FileAPI.encrypt(this.data, this.password);
         }
     },

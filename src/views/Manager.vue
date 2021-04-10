@@ -25,20 +25,28 @@
                 <tr v-for="(i, index) in filteredItems" :key="index">
                     <td>
                         <Input 
-                            :val="i.alias" 
+                            :val="i.alias"
+                            maxlength="10"
                             @change="d => i.alias = d"/>
                     </td>
                     <td>
-                        <Input :val="i.username" @change="d => i.username = d"/>
+                        <Input 
+                            :val="i.username" 
+                            maxlength="25"
+                            @change="d => i.username = d"/>
                         <CopyButton :content="i.username"/>
                     </td>
                     <td>
-                        <Input :val="i.password" @change="d => i.password = d"/>
+                        <Input 
+                            :val="i.password"
+                            maxlength="25"
+                            @change="d => i.password = d"/>
                         <CopyButton :content="i.password"/>
                     </td>
                     <td>
                         <Input 
-                            :val="i.description" 
+                            :val="i.description"
+                            maxlength="50"
                             @change="d => i.description = d"/>
                     </td>
                     <td>

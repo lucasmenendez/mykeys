@@ -3,10 +3,14 @@
         <Input 
             type="password" 
             placeholder="Type your master password"
-            :bordered="true" 
+            :bordered="true"
+            minlength="8"
             @input="p => this.password = p" />
             
-        <Button @click="decrypt">Decrypt</Button>
+        <Button @click="decrypt">
+            <i class="fi fi-unlocked"></i>
+            Decrypt!
+        </Button>
     </div>
 </template>
 
