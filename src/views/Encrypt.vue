@@ -1,9 +1,9 @@
 <template>
     <form action="" @submit.prevent="encrypt">
         <Input 
-            type="password" 
+            type="password"
+            class="bordered"
             placeholder="Type your master password"
-            :bordered="true" 
             minlength="8"
             pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
             @change="p => this.password = p" 

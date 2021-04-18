@@ -1,64 +1,30 @@
 <template>
-    <div>
-        <div>
-            <Input 
-                placeholder="Type a query to filter the list..."
-                :bordered="true"
-                @input="n => this.needle = n" />
-            
-            <Button @click="$router.push({ name: 'encrypt', params: { data } })">
-                Encrypt and store
-            </Button>
-        </div>
+    <div>   
+        <Button 
+            class="primary"
+            @click="$router.push({ name: 'encrypt', params: { data: items.slice(0, 10) } })">
+            <i class="fi left fi-locked"></i>
+            Encrypt and store
+        </Button>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Alias</th>
-                    <th>Username</th>
-                    <th>Password</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(i, index) in filteredItems" :key="index">
-                    <td>
-                        <Input 
-                            :val="i.alias"
-                            maxlength="10"
-                            @change="d => i.alias = d"/>
-                    </td>
-                    <td>
-                        <Input 
-                            :val="i.username" 
-                            maxlength="25"
-                            @change="d => i.username = d"/>
-                        <CopyButton :content="i.username"/>
-                    </td>
-                    <td>
-                        <Input 
-                            :val="i.password"
-                            maxlength="25"
-                            @change="d => i.password = d"/>
-                        <CopyButton :content="i.password"/>
-                    </td>
-                    <td>
-                        <Input 
-                            :val="i.description"
-                            maxlength="50"
-                            @change="d => i.description = d"/>
-                    </td>
-                    <td>
-                        <Button @click="items.splice(index, 1)">
-                            <i class="fi fi-trash"></i>
-                        </Button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <Table :columns="columns" :rows="items">
+            <template v-slot:cell="{ index, row, column }">
+                <Input 
+                    :val="row[column.key]" 
+                    :maxlength="column.length"
+                    @change="value => update(index, column.key, value)"/>
 
-        <Button @click="items.push({})">
+                <CopyButton v-if="column.copyable" :content="row[column.key]"/>
+            </template>
+
+            <template v-slot:action="{ index }">
+                <Button class="icon red" @click="items.splice(index, 1)">
+                    <i class="fi fi-trash"></i>
+                </Button>
+            </template>
+        </Table>
+
+        <Button v-if="items.length < 10" @click="items.push({})">
             <i class="fi fi-plus-a"></i> Add new password
         </Button>
     </div>
@@ -67,6 +33,7 @@
 <script>
 import Input from '@/elements/Input';
 import Button from '@/elements/Button';
+import Table from '@/elements/Table';
 
 import CopyButton from '@/components/CopyButton';
 
@@ -76,24 +43,24 @@ export default {
         data: Array
     },
     data: () => ({
-        items: [],
-        needle: ''
+        columns: [
+            { key: 'alias', length: 10, copyable: false },
+            { key: 'username', length: 25, copyable: true },
+            { key: 'password', length: 25, copyable: true },
+            { key: 'description', length: 50, copyable: false }
+        ],
+        items: []
     }),
-    computed: {
-        filteredItems() {
-            if (this.needle === '') return this.items;
-
-            const needle = this.needle.toLowerCase();
-            return this.items.filter(item => {
-                return item.alias.toLowerCase().includes(needle) ||
-                    item.description.toLowerCase().includes(needle);
-            });
-        }
-    },
     mounted() {
         if (!Array.isArray(this.data) || this.data.length === 0) this.$router.push({ name: 'home' });
         this.items = this.data;
     },
-    components: { Input, Button, CopyButton }
+    methods: {
+        update(index, key, value) {
+            console.log(index, key, value);
+            this.items[index][key] = value;
+        }
+    },
+    components: { Input, Button, Table, CopyButton }
 }
 </script>

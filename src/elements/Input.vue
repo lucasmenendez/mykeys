@@ -3,7 +3,6 @@
         <input 
             v-bind="$attrs"
             v-model="value"
-            :class="{ 'bordered': bordered }"
             @input="$emit('input', value)"
             @change="$emit('change', result)" />
 
@@ -18,10 +17,6 @@ export default {
     props: {
         val: {
             default: null
-        },
-        bordered: {
-            type: Boolean,
-            default: false
         }
     },
     computed: {
@@ -61,18 +56,40 @@ export default {
 </script>
 
 <style scoped>
-    input:not(.bordered) {
-        border: 1px solid transparent;
+    div {
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    div.block,
+    div.block input {
+        width: 100%;
+        height: auto;
+    }
+
+    input {
+        font-family: inherit;
+        font-weight: 300;
+        padding: 10px 15px;
+        margin: 5px;
         outline: none;
+        border-radius: 8px;
+        border: 1px solid #aaa;
     }
 
-    input:not(.bordered):hover, input:not(.bordered):active {
-        border: 1px solid black;
+    div:not(.bordered) input {
+        border: 1px solid transparent;
     }
 
-    input:not(.bordered):hover + #copy, 
-    input:not(.bordered):active + #copy {
-        visibility: visible;
-        opacity: 1;
+    div:not(.bordered) input:hover, div:not(.bordered) input:active {
+        border: 1px solid #aaa;
+    }
+
+    small {
+        display: block;
+        font-size: 12px;
+        color: #555;
+        padding: 0 5px;
+        text-align: right;
     }
 </style>

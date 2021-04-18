@@ -2,8 +2,8 @@
     <div>
         <Input 
             type="password" 
+            class="bordered"
             placeholder="Type your master password"
-            :bordered="true"
             minlength="8"
             @input="p => this.password = p" />
             

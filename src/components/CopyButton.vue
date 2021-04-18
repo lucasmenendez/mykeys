@@ -1,5 +1,5 @@
 <template>
-    <Button id="copy" @click="copy">
+    <Button class="icon" id="copy" @click="copy">
         <i class="fi fi-copy"></i>
     </Button>
 </template>

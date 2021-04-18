@@ -6,7 +6,7 @@ class FileAPI {
         //     "alias": "Example credentials",
         //     "username": "myusername",
         //     "password": "mys3cr3tp4ssw0rd",
-        //     "description": "http://myservi.ce/login"
+        //     "description": "https://myservi.ce/login"
         // }];
         return [
             {"alias": "msssavb444","username": "17lbtonz6yibyihq1czazmgfj","password": "lhnj8u6zo6caoa1e4cmtbub4l","description": "g3acfv7dg7n0crdnvtf039ohjnhfjfhl4horfr2btmj83l7g8n"},

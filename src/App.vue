@@ -1,12 +1,22 @@
 <template>
-    <div>
+    <Container>
         <router-view></router-view>
-    </div>
+        <Credits/>
+    </Container>
 </template>
 
 <script>
+import Credits from '@/components/Credits';
+
+import Container from '@/elements/Container';
 
 export default {
-    name: 'App'
+    name: 'App',
+    components: { Container, Credits }
 }
 </script>
+
+<style>
+.fi.left { margin-right: 10px;}
+.fi.right { margin-left: 10px;}
+</style>
