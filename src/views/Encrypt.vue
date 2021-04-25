@@ -1,31 +1,29 @@
 <template>
-    <form action="" @submit.prevent="encrypt">
-        <Input 
-            type="password"
-            class="bordered"
+    <div>
+        <PasswordForm 
+            description="Type your master passsword to encrypt your passwords and get your URL."
             placeholder="Type your master password"
-            minlength="8"
-            pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
-            @change="p => this.password = p" 
-            @error="log"/>
+            @error="error"
+            @submit="encrypt">
+            <template v-slot:button>
+                <i class="fi left fi-locked"></i> Encrypt!
+            </template>
+        </PasswordForm>
 
-        <Button type="submit">
-            <i class="fi fi-locked"></i>
-            Encrypt!
-        </Button>
-
-        <div v-if="content">
-            <p>Share or save the following link as a bookmark to use your encrypted passwords later!</p>
-            <router-link :to="{name: 'decrypt', params: { blob: this.content }}">https://lucasmenendez.github.io/mykeys/d/{{ content }}</router-link>
-        </div>
-    </form>
+        <GeneratedUrl 
+            v-if="blob" 
+            :blob="blob"
+            @copied="success" 
+            @error="error" />
+    </div>
 </template>
 
 <script>
+import EventBus from '@/lib/eventbus';
 import FileAPI from '@/lib/file';
 
-import Input from '@/elements/Input';
-import Button from '@/elements/Button';
+import PasswordForm from '@/components/PasswordForm';
+import GeneratedUrl from '@/components/GeneratedUrl';
 
 export default {
     name: 'Encrypt',
@@ -36,18 +34,27 @@ export default {
         }
     },
     data: () => ({
-        password: null,
-        content: ''
+        blob: '',
     }),
     methods: {
-        log(e) {
-            console.log(e);
+        success() {
+            EventBus.$emit('notification', { type: 'success', content: 'Done!'});
         },
-        async encrypt() {
-            console.log(this.password)
-            this.content = await FileAPI.encrypt(this.data, this.password);
+        error(e) {
+            console.error(e);
+            EventBus.$emit('notification', {
+                type: 'error',
+                content: e.message
+            });
+        },
+        async encrypt(password) {
+            try {
+                this.blob = await FileAPI.encrypt(this.data, password);
+            } catch (e) {
+                this.error(e);
+            }
         }
     },
-    components: { Input, Button }
+    components: { PasswordForm, GeneratedUrl }
 }
 </script>

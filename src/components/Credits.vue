@@ -5,12 +5,11 @@
 <style scoped>
 p {
     display: block;
-    width: 80vw;
+    width: 100%;
     text-align: center;
     font-size: .8em;
     color: #666;
     margin-top: 10vh;
-    margin: 10vh 10vw 0;
 }
 
 p a {

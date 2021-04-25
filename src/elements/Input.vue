@@ -1,10 +1,11 @@
 <template>
     <div>
-        <input 
+        <input
+            :class="{ 'bordered': bordered, 'block': block }"
             v-bind="$attrs"
             v-model="value"
             @input="$emit('input', value)"
-            @change="$emit('change', result)" />
+            @change="change" />
 
         <small v-if="max > 0">{{ length }}/{{ max }}</small>
         <small v-if="min > 0 && (min - length) > 0">{{ min - length }}</small>
@@ -17,6 +18,14 @@ export default {
     props: {
         val: {
             default: null
+        },
+        bordered: {
+            type: Boolean,
+            default: false
+        },
+        block: {
+            type: Boolean,
+            default: false
         }
     },
     computed: {
@@ -42,8 +51,7 @@ export default {
             else if (this.rgx && !this.rgx.test(this.value)) msg = 'The value does not meet the requirements.';
             else return this.value;
 
-            this.$emit('error', new Error(msg)); 
-            return null;
+            throw new Error(msg);
         }
     },
     data: () => ({
@@ -51,6 +59,16 @@ export default {
     }),
     mounted() {
         this.value = this.val;
+    },
+    methods: {
+        change() {
+            try {
+                let res = this.result;
+                this.$emit('change', res);
+            } catch (error) {
+                this.$emit('error', error);
+            }
+        },
     }
 }
 </script>
@@ -59,12 +77,6 @@ export default {
     div {
         display: inline-block;
         vertical-align: top;
-    }
-
-    div.block,
-    div.block input {
-        width: 100%;
-        height: auto;
     }
 
     input {
@@ -77,11 +89,15 @@ export default {
         border: 1px solid #aaa;
     }
 
-    div:not(.bordered) input {
+    input.block { 
+        width: 100% !important; 
+    }
+
+    input:not(.bordered) {
         border: 1px solid transparent;
     }
 
-    div:not(.bordered) input:hover, div:not(.bordered) input:active {
+    input:hover, input:active {
         border: 1px solid #aaa;
     }
 

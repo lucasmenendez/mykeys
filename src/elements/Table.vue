@@ -38,8 +38,8 @@ export default {
 .table {
     display: inline-block;
     vertical-align: top;
-    width: 100%;
-    margin: 20px;
+    width: 96%;
+    margin: 20px 2%;
     padding: 10px 20px;
     border: 1px solid #ddd;
     box-sizing: border-box;
@@ -87,7 +87,6 @@ export default {
         flex-wrap: wrap;
         justify-content: center;
         border: none;
-        margin: 20px 0;
         box-shadow: none;
     }
 
@@ -98,7 +97,7 @@ export default {
         flex-grow: 1;
         border: 1px solid #ddd;
         border-radius: 8px;
-        margin: 20px;
+        margin: 1vh 1vw;
         padding: 20px 10px 10px;
         box-shadow: 0px 10px 20px -15px #000;
     }
@@ -108,7 +107,7 @@ export default {
     }
 
     .table .row:first-child {
-        margin-top: 20px;
+        margin-top: 1vh;
         border-top: 1px solid #ddd;;
     }
 

@@ -1,11 +1,18 @@
 <template>
-    <div>   
-        <Button 
-            class="primary"
-            @click="$router.push({ name: 'encrypt', params: { data: items.slice(0, 10) } })">
-            <i class="fi left fi-locked"></i>
-            Encrypt and store
-        </Button>
+    <div>
+        <HelpMessage>
+            <template v-slot:content>
+                <p>Enter up to 10 passwords, including its aliases, usernames and descriptions. When you have finished, click on the <i>Encrypt and save</i> button..</p>
+            </template>
+            <template v-slot:action>
+                <Button 
+                    class="primary"
+                    @click="$router.push({ name: 'encrypt', params: { data: items.slice(0, 10) } })">
+                    <i class="fi left fi-locked"></i>
+                    Encrypt and save
+                </Button>
+            </template>
+        </HelpMessage>
 
         <Table :columns="columns" :rows="items">
             <template v-slot:cell="{ index, row, column }">
@@ -14,11 +21,14 @@
                     :maxlength="column.length"
                     @change="value => update(index, column.key, value)"/>
 
-                <CopyButton v-if="column.copyable" :content="row[column.key]"/>
+                <CopyButton 
+                    v-if="column.copyable" 
+                    :content="row[column.key]"
+                    @copied="success" />
             </template>
 
             <template v-slot:action="{ index }">
-                <Button class="icon red" @click="items.splice(index, 1)">
+                <Button class="icon red" @click="remove(index)">
                     <i class="fi fi-trash"></i>
                 </Button>
             </template>
@@ -31,11 +41,14 @@
 </template>
 
 <script>
+import EventBus from '@/lib/eventbus';
+
 import Input from '@/elements/Input';
 import Button from '@/elements/Button';
 import Table from '@/elements/Table';
 
 import CopyButton from '@/components/CopyButton';
+import HelpMessage from '@/components/HelpMessage';
 
 export default {
     name: 'Manager',
@@ -56,11 +69,17 @@ export default {
         this.items = this.data;
     },
     methods: {
+        success() {
+            EventBus.$emit('notification', { type: 'success', content: 'Done!'});
+        },
         update(index, key, value) {
-            console.log(index, key, value);
             this.items[index][key] = value;
+        },
+        remove(index) {
+            this.items.splice(index, 1);
+            this.success();
         }
     },
-    components: { Input, Button, Table, CopyButton }
+    components: { Input, Button, Table, CopyButton, HelpMessage }
 }
 </script>

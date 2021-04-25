@@ -1,24 +1,22 @@
 <template>
     <div>
-        <Input 
-            type="password" 
-            class="bordered"
+        <PasswordForm 
+            description="Type your master passsword to decrypt your URL and get your passwords."
             placeholder="Type your master password"
-            minlength="8"
-            @input="p => this.password = p" />
-            
-        <Button @click="decrypt">
-            <i class="fi fi-unlocked"></i>
-            Decrypt!
-        </Button>
+            @error="error"
+            @submit="decrypt">
+            <template v-slot:button>
+                <i class="fi left fi-unlocked"></i> Decrypt!
+            </template>
+        </PasswordForm>
     </div>
 </template>
 
 <script>
+import EventBus from '@/lib/eventbus';
 import FileAPI from '@/lib/file';
 
-import Input from '@/elements/Input';
-import Button from '@/elements/Button';
+import PasswordForm from '@/components/PasswordForm';
 
 export default {
     name: 'Decrypt',
@@ -28,15 +26,24 @@ export default {
             required: true
         }
     },
-    data: () => ({
-        password: ''
-    }),
     methods: {
-        async decrypt() {
-            const data = await FileAPI.decrypt(this.blob, this.password);
-            this.$router.push({ name: 'manager', params: { data } })
+        error(e) {
+            console.log(e);
+            EventBus.$emit('notification', {
+                type: 'error',
+                content: e.message
+            });
+        },
+        async decrypt(password) {
+            try {
+                const data = await FileAPI.decrypt(this.blob, password);
+                this.$router.push({ name: 'manager', params: { data } });
+            } catch (e) {
+                console.log(e.message);
+                this.error(e);
+            }
         }
     },
-    components: { Input, Button }
+    components: { PasswordForm }
 }
 </script>

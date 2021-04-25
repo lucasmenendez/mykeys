@@ -20,7 +20,6 @@ export default {
                 await navigator.clipboard.writeText(this.content);
                 this.$emit('copied');
             } catch (error) {
-                console.error(error);
                 this.$emit('error', error);
             }
         }

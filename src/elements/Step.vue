@@ -1,6 +1,6 @@
 <template>
-    <div class="step">
-        <span class="index">
+    <div class="step" :class="['step', !index ? 'no-index' : '']">
+        <span class="index" v-if="index">
             {{ index }}
         </span>
 
@@ -20,7 +20,7 @@ export default {
     props: {
         index: {
             type: Number,
-            required: true
+            required: false
         }
     }
 }
@@ -37,6 +37,13 @@ export default {
     justify-content: space-around;
 }
 
+.step.no-index {
+    grid-template-columns: auto 30%;
+    grid-template-areas: "content action";
+}
+
+.step.no-index .index { display: none; }
+
 .step .index {
     text-align: center;
     grid-area: index;
@@ -45,7 +52,7 @@ export default {
     color: transparent;
     background: #666;
     background-clip: text;
-    text-shadow: 0px 1px 1px rgba(255,255,255,0.5);
+    text-shadow: 0px 1px 1px rgba(255, 255, 255, .5);
 }
 
 .step .content {
@@ -63,6 +70,14 @@ export default {
         row-gap: 2vh;
         grid-template-areas: 
             "index content"
+            "action action";
+    }
+
+    .step.step.no-index {
+        grid-template-columns: 20% 80%;
+        row-gap: 2vh;
+        grid-template-areas: 
+            "content content"
             "action action";
     }
 }

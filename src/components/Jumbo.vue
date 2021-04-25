@@ -33,7 +33,7 @@ export default {
     max-width: 80%;
     color: white;
     text-align: center;
-    background: linear-gradient(135deg, rgba(234,0,251,1) 0%, rgba(9,9,121,1) 35%, rgba(0,149,255,1) 100%);
+    background: linear-gradient(135deg, #ea00fb 0%, #090979 35%, #0095ff 100%);
     padding: 5vh 5vw;
     border-radius: 32px;
     box-shadow: 0px 10px 20px -15px #000;
