@@ -8,11 +8,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontisto@v3.0.4/css/fontisto/fontisto.min.css"></i>
 
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <script>
+      (function(){ 
+        let redirect = sessionStorage.redirect; 
+        delete sessionStorage.redirect; 
+        if (redirect && redirect !== location.href) { 
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
+
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
