@@ -20,7 +20,6 @@ export default {
     },
     methods: {
         listen(def) {
-            console.log(def)
             const { type, content } = def;
             this.type = type;
             this.msg = content;

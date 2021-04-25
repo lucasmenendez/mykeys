@@ -58,7 +58,7 @@ export default {
     methods: {
         async copy() {
             try {
-                const url = this.origin + this.path;
+                const url = this.origin + '/' + this.path;
                 await navigator.clipboard.writeText(url);
                 this.$emit('copied');
             } catch (error) {
