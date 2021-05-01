@@ -12,9 +12,9 @@ const routes = [
     },
     {
         path: '/m',
-        name: 'manager',
+        name: 'create',
         props: true,
-        meta: { title: 'My Passwords' },
+        meta: { title: 'Create collection' },
         component: () => import(/* webpackChunkName: "manager" */ '@/views/Manager'),
         beforeEnter: (to, _, next) => {
             const mock = [
@@ -32,6 +32,18 @@ const routes = [
 
             if (Object.keys(to.query).includes('mock')) to.params.data = mock;
             next();
+        }
+    },
+    {
+        path: '/m/:blob',
+        name: 'manager',
+        props: true,
+        meta: { title: 'My Passwords' },
+        component: () => import(/* webpackChunkName: "manager" */ '@/views/Manager'),
+        beforeEnter: (to, _, next) => {
+            const { data, blob } = to.params;
+            if (!data && blob) next({ name: 'decrypt', params: { data, blob } });
+            else next();
         }
     },
     {
