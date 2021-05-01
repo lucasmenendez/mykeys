@@ -1,14 +1,14 @@
 <template>
-     <div class="table">
+     <div class="table" :class="{ compact }">
         <div class="row" v-for="(row, index) in rows" :key="JSON.stringify(row)">
             <div class="column" v-for="column in columns" :key="column.key" :data-label="column.key">
-                <slot name="cell" v-bind="{ index, row, column }"></slot>
+                <slot name="cell" v-bind="{ index, row, column, compact }"></slot>
             </div>
             <div 
                 class="column"
                 v-if="$scopedSlots.action" 
                 :data-label="actionsLabel">
-                <slot name="action" v-bind="{ index, item: row }"></slot>
+                <slot name="action" v-bind="{ index, item: row, compact }"></slot>
             </div>
         </div>
     </div>
@@ -29,6 +29,27 @@ export default {
         actionsLabel: {
             type: String,
             default: 'actions'
+        },
+        compactWidthLimit: {
+            type: Number,
+            default: 1080
+        }
+    },
+    data: () => ({
+        compact: false
+    }),
+    created() {
+        this.$nextTick(() => {
+            window.addEventListener('resize', this.onResize);
+            this.onResize();
+        });
+    },
+    destroyed() {
+        window.removeEventListener('resize', this.onResize);
+    },
+    methods: {
+        onResize() {
+            this.compact = document.documentElement.clientWidth <= this.compactWidthLimit;
         }
     }
 }
@@ -80,59 +101,68 @@ export default {
     font-size: .9em;
 }
 
+/**
+ * Compact Mode
+ */
 
-@media screen and (max-width: 1080px) {
-    .table {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        border: none;
-        box-shadow: none;
-    }
+.table.compact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: stretch;
+    justify-content: stretch;
+    border: none;
+    box-shadow: none;
+}
 
-    .table .row, 
-    .table .row:last-child {
-        display: inline-block;
-        width: auto;
-        flex-grow: 1;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin: 1vh 1vw;
-        padding: 20px 10px 10px;
-        box-shadow: 0px 10px 20px -15px #000;
-    }
+.table.compact .row, 
+.table.compact .row:last-child {
+    display: inline-block;
+    width: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    flex-grow: 1;
+    margin: 1vh 1vw;
+    padding: 20px 10px 10px;
+    box-shadow: 0px 10px 20px -15px #000;
+}
 
-    .table .row .column {
-        display: block;
-    }
+.table.compact .row:last-child {
+    flex-grow: 1;
+}
 
-    .table .row:first-child {
-        margin-top: 1vh;
-        border-top: 1px solid #ddd;;
-    }
+.table.compact .row .column {
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
 
-    .table .row:first-child .column:before,
-    .table .row .column:before {
-        content: attr(data-label);
-        position: relative;
-        display: block;
-        top: auto;
-        height: auto;
-        line-height: initial;
-        text-transform: capitalize;
-        font-size: .75em;
-        margin: 0 10px;
-        padding: 0;
-        color: #999;
-        border: none;
-    }
+.table.compact .row:first-child {
+    margin-top: 1vh;
+    border-top: 1px solid #ddd;;
+}
 
-    .table .row .column[data-label="actions"] {
-        text-align: right;
-    }
+.table.compact .row:first-child .column:before,
+.table.compact .row .column:before {
+    content: attr(data-label);
+    position: relative;
+    display: block;
+    top: auto;
+    height: auto;
+    line-height: initial;
+    text-transform: capitalize;
+    font-size: .75em;
+    margin: 0 10px;
+    padding: 0;
+    color: #999;
+    border: none;
+}
 
-    .table .row .column[data-label="actions"]:before {
-        display: none;
-    }
+.table.compact .row .column[data-label="actions"] {
+    text-align: right;
+}
+
+.table.compact .row .column[data-label="actions"]:before {
+    display: none;
 }
 </style>

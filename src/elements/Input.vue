@@ -1,14 +1,14 @@
 <template>
-    <div :class="{ 'block': block }">
+    <div :class="{ block, solo }">
         <input
-            :class="{ 'bordered': bordered }"
+            :class="{ bordered }"
             v-bind="$attrs"
             v-model="value"
             @input="$emit('input', value)"
             @change="change" />
 
-        <small v-if="max > 0">{{ length }}/{{ max }}</small>
-        <small v-if="min > 0">{{ min - length > 0 ? min - length : 0 }}</small>
+        <small class="counter" v-if="max > 0">{{ length }}/{{ max }}</small>
+        <small class="counter" v-if="min > 0">{{ min - length > 0 ? min - length : 0 }}</small>
     </div>
 </template>
 
@@ -24,6 +24,10 @@ export default {
             default: false
         },
         block: {
+            type: Boolean,
+            default: false
+        },
+        solo: {
             type: Boolean,
             default: false
         }
@@ -75,9 +79,12 @@ export default {
 
 <style scoped>
 div {
+    position: relative;
     display: inline-block;
     vertical-align: top;
     width: auto;
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 div.block, div.block input { 
@@ -88,9 +95,11 @@ input {
     font-family: inherit;
     font-weight: 300;
     padding: 10px 15px;
-    margin: 5px;
     outline: none;
+    line-height: 1em;
     border-radius: 8px;
+    background: white;
+    box-sizing: border-box;
     border: 1px solid #aaa;
 }
 
@@ -102,7 +111,17 @@ input:hover, input:active, input:focus {
     border: 1px solid #aaa;
 }
 
-small {
+div.solo .counter {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    height: 2em;
+    line-height: 2em;
+}
+
+.counter {
     display: block;
     font-size: 12px;
     color: #555;

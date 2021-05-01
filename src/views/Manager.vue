@@ -15,9 +15,11 @@
         </HelpMessage>
 
         <Table :columns="columns" :rows="items" v-if="items.length">
-            <template v-slot:cell="{ index, row, column }">
+            <template v-slot:cell="{ index, row, column, compact }">
                 <Input 
-                    :val="row[column.key]" 
+                    :val="row[column.key]"
+                    :block="compact" 
+                    :solo="compact"
                     :maxlength="column.length"
                     :placeholder="column.placeholder"
                     @change="value => update(index, column.key, value)"/>
