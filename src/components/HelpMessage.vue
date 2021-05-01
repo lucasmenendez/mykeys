@@ -1,5 +1,5 @@
 <template>
-    <Box class="help-message">
+    <Box class="help-message" :elevation="false">
         <template v-slot:content>
             <Step>
                 <template v-slot:content>
