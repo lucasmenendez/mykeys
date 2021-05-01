@@ -1,14 +1,14 @@
 <template>
-    <div>
+    <div :class="{ 'block': block }">
         <input
-            :class="{ 'bordered': bordered, 'block': block }"
+            :class="{ 'bordered': bordered }"
             v-bind="$attrs"
             v-model="value"
             @input="$emit('input', value)"
             @change="change" />
 
         <small v-if="max > 0">{{ length }}/{{ max }}</small>
-        <small v-if="min > 0 && (min - length) > 0">{{ min - length }}</small>
+        <small v-if="min > 0">{{ min - length > 0 ? min - length : 0 }}</small>
     </div>
 </template>
 
@@ -74,38 +74,39 @@ export default {
 </script>
 
 <style scoped>
-    div {
-        display: inline-block;
-        vertical-align: top;
-    }
+div {
+    display: inline-block;
+    vertical-align: top;
+    width: auto;
+}
 
-    input {
-        font-family: inherit;
-        font-weight: 300;
-        padding: 10px 15px;
-        margin: 5px;
-        outline: none;
-        border-radius: 8px;
-        border: 1px solid #aaa;
-    }
+div.block, div.block input { 
+    width: 100% !important; 
+}
 
-    input.block { 
-        width: 100% !important; 
-    }
+input {
+    font-family: inherit;
+    font-weight: 300;
+    padding: 10px 15px;
+    margin: 5px;
+    outline: none;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+}
 
-    input:not(.bordered) {
-        border: 1px solid transparent;
-    }
+input:not(.bordered) {
+    border: 1px solid transparent;
+}
 
-    input:hover, input:active {
-        border: 1px solid #aaa;
-    }
+input:hover, input:active, input:focus {
+    border: 1px solid #aaa;
+}
 
-    small {
-        display: block;
-        font-size: 12px;
-        color: #555;
-        padding: 0 5px;
-        text-align: right;
-    }
+small {
+    display: block;
+    font-size: 12px;
+    color: #555;
+    padding: 0 5px;
+    text-align: right;
+}
 </style>

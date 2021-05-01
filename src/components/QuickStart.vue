@@ -5,10 +5,10 @@
             <Step :index="1">
                 <template v-slot:content>First you need to create a new collection to start storing your passwords.</template>
                 <template v-slot:action>
-                    <CreateCollection @created="data => $router.push({ name: 'manager', params: { data }})">
+                    <Button class="primary" @click="$router.push({ name: 'manager' })">
                         <i class="fi left fi-plus-a"></i>
                         New collection
-                    </CreateCollection>
+                    </Button>
                 </template>
             </Step>
             <Step :index="2">
@@ -27,12 +27,11 @@
 import Box from '@/elements/Box';
 import Icon from '@/elements/Icon';
 import Step from '@/elements/Step';
-
-import CreateCollection from '@/components/CreateCollection';
+import Button from '@/elements/Button';
 
 export default {
     name: 'QuickStart',
-    components: { Box, Step, Icon, CreateCollection }
+    components: { Box, Step, Icon, Button }
 }
 </script>
 

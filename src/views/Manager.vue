@@ -14,11 +14,12 @@
             </template>
         </HelpMessage>
 
-        <Table :columns="columns" :rows="items">
+        <Table :columns="columns" :rows="items" v-if="items.length">
             <template v-slot:cell="{ index, row, column }">
                 <Input 
                     :val="row[column.key]" 
                     :maxlength="column.length"
+                    :placeholder="column.placeholder"
                     @change="value => update(index, column.key, value)"/>
 
                 <CopyButton 
@@ -33,10 +34,12 @@
                 </Button>
             </template>
         </Table>
-
-        <Button v-if="items.length < 10" @click="items.push({})">
-            <i class="fi fi-plus-a"></i> Add new password
-        </Button>
+        
+        <center>
+            <Button v-if="items.length < 10" @click="items.push({})">
+                <i class="fi fi-plus-a"></i> Add new password
+            </Button>
+        </center>
     </div>
 </template>
 
@@ -57,16 +60,15 @@ export default {
     },
     data: () => ({
         columns: [
-            { key: 'alias', length: 10, copyable: false },
-            { key: 'username', length: 25, copyable: true },
-            { key: 'password', length: 25, copyable: true },
-            { key: 'description', length: 50, copyable: false }
+            { key: 'alias', length: 20, copyable: false, placeholder: 'Example credentials' },
+            { key: 'username', length: 25, copyable: true, placeholder: 'myusername' },
+            { key: 'password', length: 25, copyable: true, placeholder: 'myp4ssw0rd' },
+            { key: 'description', length: 50, copyable: false, placeholder: 'https://myservi.ce/login' }
         ],
         items: []
     }),
     mounted() {
-        if (!Array.isArray(this.data) || this.data.length === 0) this.$router.push({ name: 'home' });
-        this.items = this.data;
+        this.items = !Array.isArray(this.data) || this.data.length === 0 ? [{}] : this.data;
     },
     methods: {
         success() {
