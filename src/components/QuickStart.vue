@@ -5,7 +5,7 @@
             <Step :index="1">
                 <template v-slot:content>First you need to create a new collection to start storing your passwords.</template>
                 <template v-slot:action>
-                    <Button class="primary" @click="$router.push({ name: 'manager' })">
+                    <Button class="primary" @click="$router.push({ name: 'create' })">
                         <i class="fi left fi-plus-a"></i>
                         New collection
                     </Button>

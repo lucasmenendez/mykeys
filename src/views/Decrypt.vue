@@ -36,8 +36,9 @@ export default {
         },
         async decrypt(password) {
             try {
+                const blob = this.blob;
                 const data = await FileAPI.decrypt(this.blob, password);
-                this.$router.push({ name: 'manager', params: { data } });
+                this.$router.push({ name: 'manager', params: { data, blob } });
             } catch (e) {
                 console.log(e.message);
                 this.error(e);

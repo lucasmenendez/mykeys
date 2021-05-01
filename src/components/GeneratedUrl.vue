@@ -48,7 +48,7 @@ export default {
             return origin + '/';
         },
         path() {
-            const { href } = this.$router.resolve({ name: 'decrypt', params: { blob: this.blob }});
+            const { href } = this.$router.resolve({ name: 'manager', params: { blob: this.blob }});
             return href;
         }
     },
