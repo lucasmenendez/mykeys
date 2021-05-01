@@ -1,9 +1,12 @@
 <template>
-    <p>Created with ❤️ by <a href="https://github.com/lucasmenendez" target="_blank">Lucas Menéndez</a>. Checkout the source code on <a href="https://github.com/lucasmenendez/mykeys" target="_blank">GitHub</a>.</p>
+    <div>
+        <p>Created with ❤️ by <a href="https://github.com/lucasmenendez" target="_blank">Lucas Menéndez</a>. Checkout the source code on <a href="https://github.com/lucasmenendez/mykeys" target="_blank">GitHub</a>. </p>
+        <p>Need help, have questions or comments? Check out our <a href="https://forms.gle/TFcWEuDJUmEyjEgY7" target="_blank">feedback form</a>.</p>
+    </div>
 </template>
 
 <style scoped>
-p {
+div {
     display: block;
     margin: 10vh auto 0;
     max-width: 90%;
