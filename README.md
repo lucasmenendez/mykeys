@@ -32,4 +32,4 @@ The data is in the URL, and not in any server or device. **Remember**, if the ur
 
 ## Credits
 
-Thanks to much to my CSS Grid teacher Sandra Laguna and to my professional beta testers [Pablo Duque](https://github.com/pabloduque0), [Mario Rodriguez](https://github.com/mapno), [Marcos Stival](https://github.com/mrksph), [Alberto Rojas]() and [Manuel Méndez](https://www.linkedin.com/in/manuel-m%C3%A9ndez-garc%C3%ADa-0ba16316a/).
+Thanks to much to my CSS Grid teacher Sandra Laguna and to my professional beta testers [Pablo Duque](https://github.com/pabloduque0), [Mario Rodriguez](https://github.com/mapno), [Marcos Stival](https://github.com/mrksph), [Alberto Rojas](https://github.com/r0jasx) and [Manuel Méndez](https://www.linkedin.com/in/manuel-m%C3%A9ndez-garc%C3%ADa-0ba16316a/).

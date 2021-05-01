@@ -36,7 +36,7 @@
         </Table>
         
         <center>
-            <Button v-if="items.length < 10" @click="items.push({})">
+            <Button v-if="items.length < 10" @click="append">
                 <i class="fi fi-plus-a"></i> Add new password
             </Button>
         </center>
@@ -71,6 +71,10 @@ export default {
         this.items = !Array.isArray(this.data) || this.data.length === 0 ? [{}] : this.data;
     },
     methods: {
+        append() {
+            const a = { alias: null, username: null, password: null, description: null };
+            this.items.push(a);
+        },
         success() {
             EventBus.$emit('notification', { type: 'success', content: 'Done!'});
         },
@@ -79,7 +83,6 @@ export default {
         },
         remove(index) {
             this.items.splice(index, 1);
-            this.success();
         }
     },
     components: { Input, Button, Table, CopyButton, HelpMessage }
