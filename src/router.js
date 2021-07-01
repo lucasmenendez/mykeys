@@ -71,6 +71,12 @@ const routes = [
             if (Array.isArray(data) && data.length > 0) next();
             else next({ name: 'home' });
         }
+    },
+    {
+        path: '/faq',
+        name: 'faq',
+        meta: { title: 'FAQ' },
+        component: () => import(/* webpackChunkName: "encrypt" */ '@/views/FAQ')
     }
 ]
 

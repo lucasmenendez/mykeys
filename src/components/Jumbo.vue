@@ -3,6 +3,8 @@
         <img :src="picture"/>
         <h1>{{ title }}</h1>
         <p v-html="description" />
+
+        <slot name="menu"></slot>
     </div>
 </template>
 

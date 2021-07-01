@@ -1,5 +1,6 @@
 <template>
     <div>
+        <SectionTitle>Encrypt</SectionTitle>
         <PasswordForm 
             description="Type your master passsword to encrypt your passwords and get your URL."
             placeholder="Type your master password"
@@ -22,6 +23,7 @@
 import EventBus from '@/lib/eventbus';
 import FileAPI from '@/lib/file';
 
+import SectionTitle from '@/components/SectionTitle';
 import PasswordForm from '@/components/PasswordForm';
 import GeneratedUrl from '@/components/GeneratedUrl';
 
@@ -55,6 +57,6 @@ export default {
             }
         }
     },
-    components: { PasswordForm, GeneratedUrl }
+    components: { SectionTitle, PasswordForm, GeneratedUrl }
 }
 </script>
