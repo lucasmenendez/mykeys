@@ -24,7 +24,7 @@ var (
 	filepath   = flag.String("f", "mykeys.out", "path to passwords file")
 	b64        = flag.String("b64", "", "passwords file content encoded in base64")
 	passphrase = flag.String("p", "", "(required) passphrase to decrypt and encrypt the passwords file")
-	action     = flag.String("a", "", "(required) action to perform: set, delelete, get, list")
+	action     = flag.String("a", "", "(required) action to perform: set, del, get, list")
 	print      = flag.Bool("print", false, "print the password instead of writing to the filepath")
 	json       = flag.Bool("json", false, "print the output in json format")
 	// input data flags
@@ -98,7 +98,7 @@ func main() {
 		// perform the set action with the provided flags and commit the result
 		mykeysCLI.Set(*alias, *username, *password)
 		commit()
-	case "delete":
+	case "del":
 		// check required flags for delete action (alias)
 		if alias == nil || *alias == "" {
 			fmt.Println(aliasRequiredMsg)

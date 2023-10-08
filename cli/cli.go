@@ -41,16 +41,7 @@ func (cli *CLI) Open() error {
 	if len(encrypted) == 0 {
 		return nil
 	}
-	// decrypt the passwords file with the passphrase provided
-	rawPasswords, err := cipher.Decrypt(encrypted, cli.passphrase)
-	if err != nil {
-		return fmt.Errorf("error during passwords decryption: %w", err)
-	}
-	// import the passwords into the passwords map
-	if err := cli.passwords.Import(rawPasswords); err != nil {
-		return fmt.Errorf("error during passwords import: %w", err)
-	}
-	return nil
+	return cli.Import(string(encrypted))
 }
 
 // Import imports the passwords from the base64 encoded string provided.
@@ -91,18 +82,12 @@ func (cli *CLI) Export() (string, error) {
 // Save encrypts and saves the passwords map to the passwords file, overwriting
 // it.
 func (cli *CLI) Save() error {
-	// export the passwords map to a json representation
-	rawPasswords, err := cli.passwords.Export()
+	strExport, err := cli.Export()
 	if err != nil {
-		return fmt.Errorf("error during passwords export: %w", err)
-	}
-	// encrypt the json representation with the passphrase provided
-	encrypted, err := cipher.Encrypt(rawPasswords, cli.passphrase)
-	if err != nil {
-		return fmt.Errorf("error during passwords encryption: %w", err)
+		return err
 	}
 	// save the encrypted data to the passwords file, overwriting it
-	if err := os.WriteFile(cli.filepath, encrypted, 0644); err != nil {
+	if err := os.WriteFile(cli.filepath, []byte(strExport), 0644); err != nil {
 		return fmt.Errorf("error during passwords saving: %w", err)
 	}
 	return nil
