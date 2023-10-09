@@ -107,27 +107,26 @@ func (cli *CLI) Del(alias string) {
 // List lists all the passwords in the passwords map. If json is true, it will
 // print the json representation of the passwords map. If json is false, it
 // will print the string representation of the passwords map.
-func (cli *CLI) List(json bool) {
+func (cli *CLI) List(json bool) string {
 	if json {
-		fmt.Println(cli.passwords)
-		return
+		return cli.passwords.String()
 	}
+	var result string
 	for alias, pass := range cli.passwords {
-		fmt.Printf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
+		result += fmt.Sprintf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
 	}
+	return result
 }
 
 // Get returns the password with the given alias. If json is true, it will
 // print the json representation of the password. If json is false, it will
 // print the string representation of the password.
-func (cli *CLI) Get(alias string, json bool) {
+func (cli *CLI) Get(alias string, json bool) string {
 	if pass := cli.passwords.Get(alias); pass != nil {
 		if json {
-			fmt.Println(pass)
-			return
+			return pass.String()
 		}
-		fmt.Printf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
-		return
+		return fmt.Sprintf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
 	}
-	fmt.Printf("%s not found\n", alias)
+	return ""
 }

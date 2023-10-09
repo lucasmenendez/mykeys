@@ -116,11 +116,19 @@ func main() {
 		}
 		// perform the get action with the provided flags, json flag defines
 		// if the output should be printed in json format
-		mykeysCLI.Get(*alias, *json)
+		if pass := mykeysCLI.Get(*alias, *json); pass != "" {
+			fmt.Println(pass)
+			return
+		}
+		fmt.Printf("password with alias %s not found\n", *alias)
 	case "list":
 		// perform the list action with the provided flags, json flag defines
 		// if the output should be printed in json format
-		mykeysCLI.List(*json)
+		if passes := mykeysCLI.List(*json); passes != "" && passes != "{}" {
+			fmt.Println(passes)
+			return
+		}
+		fmt.Println("no passwords found")
 	default:
 		// by default print the no action message
 		fmt.Println(noActionMsg)
