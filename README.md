@@ -4,7 +4,10 @@
 
 ### Build
 ```sh
-go build -o ./mykeys-cli ./cmd/cli && chmod +x ./mykeys-cli
+go build -o ./bin/mykeys-cli ./cmd/cli && chmod +x ./bin/mykeys-cli
+
+# or:
+# make go
 ```
 
 ### Demo
@@ -17,18 +20,12 @@ Options:
         (required) action to perform: set, del, get, list
   -alias string
         alias of the password
-  -b64 string
-        passwords file content encoded in base64
   -f string
         path to passwords file (default "mykeys.out")
-  -json
-        print the output in json format
   -p string
         (required) passphrase to decrypt and encrypt the passwords file
   -pass string
         password of the password
-  -print
-        print the password instead of writing to the filepath
   -user string
         username of the password
 ```
@@ -39,6 +36,9 @@ Options:
 ```sh
 # build for webassembly and save the result in the ./web folder
 GOOS=js GOARCH=wasm go build -o ./web/main.wasm ./cmd/webassembly
+
+# or:
+# make web
 ```
 
 ### Demo
