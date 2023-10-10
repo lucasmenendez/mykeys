@@ -1,10 +1,10 @@
 package cli
 
 import (
-	"encoding/base64"
 	"fmt"
 	"os"
 
+	"github.com/lucasmenendez/mykeys-cli/base64url"
 	"github.com/lucasmenendez/mykeys-cli/cipher"
 	"github.com/lucasmenendez/mykeys-cli/passwords"
 )
@@ -47,7 +47,7 @@ func (cli *CLI) Open() error {
 // Import imports the passwords from the base64 encoded string provided.
 func (cli *CLI) Import(dump string) error {
 	// decode the base64 string
-	encrypted, err := base64.StdEncoding.DecodeString(dump)
+	encrypted, err := base64url.DecodeString(dump)
 	if err != nil {
 		return fmt.Errorf("error during passwords decoding: %w", err)
 	}
@@ -76,7 +76,7 @@ func (cli *CLI) Export() (string, error) {
 		return "", fmt.Errorf("error during passwords encryption: %w", err)
 	}
 	// encode the encrypted data to base64
-	return base64.StdEncoding.EncodeToString(encrypted), nil
+	return base64url.EncodeToString(encrypted), nil
 }
 
 // Save encrypts and saves the passwords map to the passwords file, overwriting

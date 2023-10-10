@@ -6,6 +6,13 @@ async function loadGoEnv() {
 }
 
 (async function(){
+    const urlQuery = window.location.search;
+    const urlParams = new URLSearchParams(urlQuery);
+    const urlBase64 = urlParams.get("b64");
+    if (urlBase64) {
+        document.getElementById("base64").value = urlBase64;
+    }
+
     await loadGoEnv();
     document.getElementById("main-form").addEventListener("submit", function(e) {
         e.preventDefault();
