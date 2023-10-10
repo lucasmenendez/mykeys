@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"syscall/js"
 
-	"github.com/lucasmenendez/mykeys-cli/cli"
+	"github.com/lucasmenendez/mykeys-cli/api"
 )
 
 const (
@@ -24,20 +24,20 @@ const (
 	delPasswordNArgs   = 3 // b64, passphrase, alias
 )
 
-func initCLI(b64, passphrase js.Value) (*cli.CLI, error) {
+func initCLI(b64, passphrase js.Value) (*api.API, error) {
 	// Check required param (passphrase)
 	if passphrase.String() == "" {
 		return nil, fmt.Errorf("no passphrase provided")
 	}
 	// Create CLI with empty filepath and the provided passphrase
-	mykeysCLI := cli.New("", passphrase.String())
+	mykeysAPI := api.New(passphrase.String())
 	// Import from base64 or read it from the file
 	if b64.String() != "" {
-		if err := mykeysCLI.Import(b64.String()); err != nil {
+		if err := mykeysAPI.Import(b64.String()); err != nil {
 			return nil, err
 		}
 	}
-	return mykeysCLI, nil
+	return mykeysAPI, nil
 }
 
 func main() {
@@ -49,12 +49,12 @@ func main() {
 				return fmt.Sprintf("error: %d arguments required", listPasswordsNArgs)
 			}
 			// Create CLI
-			mykeysCLI, err := initCLI(args[0], args[1])
+			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}
 			// Return the list of passwords as a JSON string
-			return mykeysCLI.List(true)
+			return mykeysAPI.List(true)
 		}))
 	myKeysClass.Set(jsGetMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -63,12 +63,12 @@ func main() {
 				return fmt.Sprintf("error: %d arguments required", getPasswordNArgs)
 			}
 			// Create CLI
-			mykeysCLI, err := initCLI(args[0], args[1])
+			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}
 			// Return the password as a JSON string
-			return mykeysCLI.Get(args[2].String(), true)
+			return mykeysAPI.Get(args[2].String(), true)
 		}))
 	myKeysClass.Set(jsSetMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -78,14 +78,14 @@ func main() {
 				return fmt.Sprintf("error: %d arguments required", setPasswordNArgs)
 			}
 			// Create CLI
-			mykeysCLI, err := initCLI(args[0], args[1])
+			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}
 			// Set the password
-			mykeysCLI.Set(args[2].String(), args[3].String(), args[4].String())
+			mykeysAPI.Set(args[2].String(), args[3].String(), args[4].String())
 			// Return the list of passwords as a JSON string
-			list, err := mykeysCLI.Export()
+			list, err := mykeysAPI.Export()
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}
@@ -98,14 +98,14 @@ func main() {
 				return fmt.Sprintf("error: %d arguments required", delPasswordNArgs)
 			}
 			// Create CLI
-			mykeysCLI, err := initCLI(args[0], args[1])
+			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}
 			// Delete the password
-			mykeysCLI.Del(args[2].String())
+			mykeysAPI.Del(args[2].String())
 			// Return the list of passwords as a JSON string
-			list, err := mykeysCLI.Export()
+			list, err := mykeysAPI.Export()
 			if err != nil {
 				return fmt.Sprintf("error: %s", err.Error())
 			}

@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
-	"github.com/lucasmenendez/mykeys-cli/cli"
+	"github.com/lucasmenendez/mykeys-cli/api"
 )
 
 const (
@@ -22,16 +23,28 @@ Options:`
 var (
 	// config flags
 	filepath   = flag.String("f", "mykeys.out", "path to passwords file")
-	b64        = flag.String("b64", "", "passwords file content encoded in base64")
 	passphrase = flag.String("p", "", "(required) passphrase to decrypt and encrypt the passwords file")
 	action     = flag.String("a", "", "(required) action to perform: set, del, get, list")
-	print      = flag.Bool("print", false, "print the password instead of writing to the filepath")
-	json       = flag.Bool("json", false, "print the output in json format")
 	// input data flags
 	alias    = flag.String("alias", "", "alias of the password")
 	username = flag.String("user", "", "username of the password")
 	password = flag.String("pass", "", "password of the password")
 )
+
+func openfile(path string) (string, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return "", fmt.Errorf("error during passwords reading: %w", err)
+	}
+	return string(content), nil
+}
+
+func savefile(path, content string) error {
+	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+		return fmt.Errorf("error during passwords saving: %w", err)
+	}
+	return nil
+}
 
 func main() {
 	flag.Usage = func() {
@@ -49,35 +62,30 @@ func main() {
 		return
 	}
 	// Create CLI
-	mykeysCLI := cli.New(*filepath, *passphrase)
-	// Import from base64 or read it from the file
-	if b64 != nil && *b64 != "" {
-		if err := mykeysCLI.Import(*b64); err != nil {
-			fmt.Println(err)
-			return
-		}
-	} else {
-		if err := mykeysCLI.Open(); err != nil {
+	mykeysAPI := api.New(*passphrase)
+	passwords, err := openfile(*filepath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if passwords != "" {
+		if err := mykeysAPI.Import(passwords); err != nil {
 			fmt.Println(err)
 			return
 		}
 	}
 	// create a commit function to save or print the result
 	commit := func() {
-		// if print is false, save the result in the file and exit
-		if print == nil || !*print {
-			if err := mykeysCLI.Save(); err != nil {
-				fmt.Println(err)
-			}
-			return
-		}
 		// if print is true, print the result
-		dump, err := mykeysCLI.Export()
+		dump, err := mykeysAPI.Export()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		fmt.Println(dump)
+		// if print is false, save the result in the file and exit
+		if err := savefile(*filepath, dump); err != nil {
+			fmt.Println(err)
+		}
 	}
 	// check the provided action
 	switch *action {
@@ -96,7 +104,7 @@ func main() {
 			return
 		}
 		// perform the set action with the provided flags and commit the result
-		mykeysCLI.Set(*alias, *username, *password)
+		mykeysAPI.Set(*alias, *username, *password)
 		commit()
 	case "del":
 		// check required flags for delete action (alias)
@@ -106,7 +114,7 @@ func main() {
 		}
 		// perform the delete action with the provided flags and commit the
 		// result
-		mykeysCLI.Del(*alias)
+		mykeysAPI.Del(*alias)
 		commit()
 	case "get":
 		// check required flags for get action (alias)
@@ -116,7 +124,7 @@ func main() {
 		}
 		// perform the get action with the provided flags, json flag defines
 		// if the output should be printed in json format
-		if pass := mykeysCLI.Get(*alias, *json); pass != "" {
+		if pass := mykeysAPI.Get(*alias, false); pass != "" {
 			fmt.Println(pass)
 			return
 		}
@@ -124,7 +132,7 @@ func main() {
 	case "list":
 		// perform the list action with the provided flags, json flag defines
 		// if the output should be printed in json format
-		if passes := mykeysCLI.List(*json); passes != "" && passes != "{}" {
+		if passes := mykeysAPI.List(false); passes != "" {
 			fmt.Println(passes)
 			return
 		}

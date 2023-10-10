@@ -1,3 +1,4 @@
+.PHONY: go web all
 
 go: 
 	go build -o ./bin/cli ./cmd/cli/main.go
