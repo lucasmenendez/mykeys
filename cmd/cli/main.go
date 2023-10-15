@@ -22,7 +22,7 @@ Options:`
 
 var (
 	// config flags
-	filepath   = flag.String("f", "mykeys.out", "path to passwords file")
+	filepath   = flag.String("f", "secret.keys", "path to passwords file")
 	passphrase = flag.String("p", "", "(required) passphrase to decrypt and encrypt the passwords file")
 	action     = flag.String("a", "", "(required) action to perform: set, del, get, list")
 	// input data flags

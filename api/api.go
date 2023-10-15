@@ -22,7 +22,7 @@ type API struct {
 func New(passphrase string) *API {
 	return &API{
 		passphrase: []byte(passphrase),
-		passwords:  make(map[string]*passwords.Password),
+		passwords:  []*passwords.Password{},
 	}
 }
 
@@ -41,7 +41,7 @@ func (api *API) Import(dump string) error {
 		return fmt.Errorf("error during passwords decryption: %w", err)
 	}
 	// import the passwords into the passwords map
-	if err := api.passwords.Import(rawPasswords); err != nil {
+	if api.passwords, err = api.passwords.Import(rawPasswords); err != nil {
 		return fmt.Errorf("error during passwords import: %w", err)
 	}
 	return nil
@@ -84,8 +84,8 @@ func (api *API) List(json bool) string {
 		return api.passwords.String()
 	}
 	var result string
-	for alias, pass := range api.passwords {
-		result += fmt.Sprintf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
+	for _, pass := range api.passwords {
+		result += fmt.Sprintf("[%s] %s: %s\n", pass.Alias, pass.Username, pass.Password)
 	}
 	return result
 }

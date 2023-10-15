@@ -1,58 +1,21 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>MyKeysCLI Example</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
-</head>
-<body>
-    <main class="container">
-        <form id="main-form" action="">
-            <article>
-                <label for="base64">
-                    File base64
-                    <textarea id="base64" name="base64" rows="6" cols="80" placeholder="The encrypted file in base64 format..."></textarea>
-                </label>
-                <div class="grid">
-                    <label for="passphrase">
-                        File password
-                        <input type="password" id="passphrase" name="passphrase" placeholder="Your passphrase...">
-                    </label>
-                    <label for="action">
-                        Desired action
-                        <select id="action" name="action">
-                            <option disabled selected value> -- select an action -- </option>
-                            <option value="list">List</option>
-                            <option value="get">Get</option>
-                            <option value="set">Set</option>
-                            <option value="del">Delete</option>
-                        </select>
-                    </label>
-                </div>
-                <div class="grid">
-                    <label for="alias">
-                        Alias
-                        <input type="text" id="alias" name="alias" placeholder="The alias of the password.">
-                    </label>
-                    <label for="username">
-                        Username
-                        <input type="text" id="username" name="username" placeholder="The username of the password.">
-                    </label>
-                    <label for="password">
-                        Password
-                        <input type="password" id="password" name="password" placeholder="The secret of the password.">
-                    </label>
-                </div>
-                <footer>
-                    <input type="submit" value="Execute">
-                    <textarea id="output" rows="6" readonly>
-                    </textarea>
-                </footer>
-            </article>
-        </form>
-    </main>
+<html data-theme="light">
 
-    <script src="wasm_exec.js"></script>
-    <script src="main.js"></script>
+<head>
+	<!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>🔐 MyKeys.live</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple/siimple.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple-icons/siimple-icons.css" />
+</head>
+
+<body>
+	<div id="app"></div>
+
+	<script src="wasm_exec.js"></script>
+	<script type="module" src="src/app.js"></script>
 </body>
+
 </html>

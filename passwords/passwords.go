@@ -5,6 +5,7 @@ import "encoding/json"
 // Password is the struct that represents a password, it has an username and a
 // password.
 type Password struct {
+	Alias    string `json:"alias"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -26,7 +27,7 @@ func (p *Password) Export() ([]byte, error) {
 
 // Passwords is the struct that represents a collection of passwords, it is a
 // map of alias to password.
-type Passwords map[string]*Password
+type Passwords []*Password
 
 // String returns the string representation of the passwords. It uses the
 // Export() method to get the json representation of the passwords and then
@@ -44,24 +45,48 @@ func (p Passwords) Export() ([]byte, error) {
 }
 
 // Import imports the passwords from the json representation.
-func (p Passwords) Import(data []byte) error {
-	return json.Unmarshal(data, &p)
+func (p Passwords) Import(data []byte) (Passwords, error) {
+	items := []Password{}
+	if err := json.Unmarshal(data, &items); err != nil {
+		return nil, err
+	}
+	for _, item := range items {
+		p = append(p, &item)
+	}
+	return p, nil
+
 }
 
 // Get returns the password with the given alias.
-func (p Passwords) Get(alias string) *Password {
-	return p[alias]
+func (p *Passwords) Get(alias string) *Password {
+	for _, password := range *p {
+		if password.Alias == alias {
+			return password
+		}
+	}
+	return nil
 }
 
 // Set sets the password with the given alias, username and password. If it
 // already exists, it will be overwritten.
 func (p Passwords) Set(alias, username, password string) Passwords {
-	p[alias] = &Password{Username: username, Password: password}
-	return p
+	for i, pass := range p {
+		if pass.Alias == alias {
+			p[i].Username = username
+			p[i].Password = password
+			return p
+		}
+	}
+	return append(p, &Password{Alias: alias, Username: username, Password: password})
 }
 
 // Del deletes the password with the given alias, if it exists.
 func (p Passwords) Del(alias string) Passwords {
-	delete(p, alias)
+	for i, pass := range p {
+		if pass.Alias == alias {
+			p[i] = p[len(p)-1]
+			return p[:len(p)-1]
+		}
+	}
 	return p
 }
