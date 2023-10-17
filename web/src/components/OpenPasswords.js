@@ -3,8 +3,10 @@ export default {
     props: ['initial'],
     data() {
         return {
+            errorMessage: "",
             content: this.initial,
             passphrase: "",
+            passwords: [],
             external: !!this.initial,
         }
     },
@@ -48,6 +50,7 @@ export default {
                 class="textarea" 
                 rows="6"
                 v-model="content"
+                style="resize: none;"
                 placeholder="Or paste here your base64 encrypted passwords..."></textarea>
             <div class="is-flex has-justify-center has-text-center">
                 <span class="is-block has-mt-6">and</span>
@@ -62,13 +65,13 @@ export default {
                 ref="passphraseInput"
                 placeholder="Enter your passwords passphrase...">
             <button 
-                type="button"
+                type="submit"
                 class="button is-primary"
-                :disabled="!passphrase"
-                @click="$emit('submit')">
+                :disabled="!passphrase">
                 <i class="si-unlock"></i>
             </button>
         </div>
+        <div class="alert has-mb-none has-mt-6" style="background: red;" v-if="errorMessage">{{ errorMessage }}</div>
     </form>
     `,
     methods: {
@@ -88,7 +91,19 @@ export default {
         },
         submitForm(event) {
             event.preventDefault();
-            this.$emit('submit', this.content, this.passphrase);
+            let result = MyKeysCLI.list(this.content, this.passphrase);
+            if (result.error) {
+                this.errorMessage = result.error;
+                return;
+            }
+            let passwords = [];
+            try {
+                passwords = JSON.parse(result.data);
+            } catch (error) {
+                this.errorMessage = error;
+                return;
+            }
+            this.$emit('submit', this.content, this.passphrase, passwords);
         }
     },
     watch: {

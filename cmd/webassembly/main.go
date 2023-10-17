@@ -40,56 +40,69 @@ func initCLI(b64, passphrase js.Value) (*api.API, error) {
 	return mykeysAPI, nil
 }
 
+func wasmResult(data any, err error) any {
+	if err == nil {
+		return map[string]any{
+			"error": nil,
+			"data":  data,
+		}
+	}
+	return map[string]any{
+		"error": err.Error(),
+		"data":  data,
+	}
+}
+
 func main() {
 	myKeysClass := js.ValueOf(map[string]interface{}{})
 	myKeysClass.Set(jsListMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
 			// Check the number of required params (b64 and passphrase)
 			if len(args) != listPasswordsNArgs {
-				return fmt.Sprintf("error: %d arguments required", listPasswordsNArgs)
+				return wasmResult(nil, fmt.Errorf("error: %d arguments required", listPasswordsNArgs))
 			}
 			// Create CLI
 			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
 			// Return the list of passwords as a JSON string
-			return mykeysAPI.List(true)
+			return wasmResult(mykeysAPI.List(true), nil)
 		}))
 	myKeysClass.Set(jsGetMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
 			// Check the number of required params (b64, passphrase and alias)
 			if len(args) != getPasswordNArgs {
-				return fmt.Sprintf("error: %d arguments required", getPasswordNArgs)
+				return wasmResult(nil, fmt.Errorf("error: %d arguments required", getPasswordNArgs))
 			}
 			// Create CLI
 			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
 			// Return the password as a JSON string
-			return mykeysAPI.Get(args[2].String(), true)
+			return wasmResult(mykeysAPI.Get(args[2].String(), true), nil)
 		}))
 	myKeysClass.Set(jsSetMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
 			// Check the number of required params (b64, passphrase, alias,
 			// username and password)
 			if len(args) != setPasswordNArgs {
-				return fmt.Sprintf("error: %d arguments required", setPasswordNArgs)
+				return wasmResult(nil, fmt.Errorf("error: %d arguments required", getPasswordNArgs))
 			}
 			// Create CLI
 			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
 			// Set the password
 			mykeysAPI.Set(args[2].String(), args[3].String(), args[4].String())
 			// Return the list of passwords as a JSON string
 			list, err := mykeysAPI.Export()
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
-			return list
+			return wasmResult(list, nil)
 		}))
 	myKeysClass.Set(jsDelMethod,
 		js.FuncOf(func(this js.Value, args []js.Value) any {
@@ -100,16 +113,16 @@ func main() {
 			// Create CLI
 			mykeysAPI, err := initCLI(args[0], args[1])
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
 			// Delete the password
 			mykeysAPI.Del(args[2].String())
 			// Return the list of passwords as a JSON string
 			list, err := mykeysAPI.Export()
 			if err != nil {
-				return fmt.Sprintf("error: %s", err.Error())
+				return wasmResult(nil, err)
 			}
-			return list
+			return wasmResult(list, nil)
 		}))
 	// Set the MyKeys class in the global scope of the JS environment
 	js.Global().Set(jsClassName, myKeysClass)

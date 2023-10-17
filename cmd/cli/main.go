@@ -40,7 +40,13 @@ func openfile(path string) (string, error) {
 }
 
 func savefile(path, content string) error {
-	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+	f, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("error during passwords saving: %w", err)
+	}
+	defer f.Close()
+
+	if _, err := f.WriteString(content); err != nil {
 		return fmt.Errorf("error during passwords saving: %w", err)
 	}
 	return nil

@@ -5,7 +5,6 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"crypto/rand"
-	"fmt"
 	"io"
 )
 
@@ -23,17 +22,17 @@ func Encrypt(data, passphrase []byte) ([]byte, error) {
 	// user
 	block, err := aes.NewCipher(hashFunc(passphrase))
 	if err != nil {
-		return nil, fmt.Errorf("cipher error during encryption: %w", err)
+		return nil, err
 	}
 	// create the gcm cipher with the block created above
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, fmt.Errorf("cipher error during encryption: %w", err)
+		return nil, err
 	}
 	// create a slice of bytes with the size of the nonce and fill it with
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, fmt.Errorf("cipher error during encryption: %w", err)
+		return nil, err
 	}
 	// return the encrypted data with the nonce bytes prepended
 	return gcm.Seal(nonce, nonce, data, nil), nil
@@ -45,12 +44,12 @@ func Decrypt(data, passphrase []byte) ([]byte, error) {
 	// user
 	block, err := aes.NewCipher(hashFunc(passphrase))
 	if err != nil {
-		return nil, fmt.Errorf("cipher error during decryption: %w", err)
+		return nil, err
 	}
 	// create the gcm cipher with the block created above
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, fmt.Errorf("cipher error during decryption: %w", err)
+		return nil, err
 	}
 	// get the nonce size
 	nonceSize := gcm.NonceSize()
@@ -60,7 +59,7 @@ func Decrypt(data, passphrase []byte) ([]byte, error) {
 	// decrypt the ciphertext with the nonce using the gcm cipher
 	result, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return nil, fmt.Errorf("cipher error during decryption: %w", err)
+		return nil, err
 	}
 	return result, nil
 }

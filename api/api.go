@@ -13,7 +13,7 @@ import (
 // decrypt it and a password map.
 type API struct {
 	passphrase []byte
-	passwords  passwords.Passwords
+	passwords  *passwords.Passwords
 }
 
 // New returns an empty API with the given  passphrase. It also inits
@@ -22,7 +22,7 @@ type API struct {
 func New(passphrase string) *API {
 	return &API{
 		passphrase: []byte(passphrase),
-		passwords:  []*passwords.Password{},
+		passwords:  new(passwords.Passwords),
 	}
 }
 
@@ -33,16 +33,16 @@ func (api *API) Import(dump string) error {
 	// decode the base64 string
 	encrypted, err := base64url.DecodeString(dump)
 	if err != nil {
-		return fmt.Errorf("error during passwords decoding: %w", err)
+		return fmt.Errorf("%w, decode password dump error", err)
 	}
 	// decrypt the passwords file with the passphrase provided
 	rawPasswords, err := cipher.Decrypt(encrypted, api.passphrase)
 	if err != nil {
-		return fmt.Errorf("error during passwords decryption: %w", err)
+		return fmt.Errorf("%w, decrypt passwords error", err)
 	}
 	// import the passwords into the passwords map
-	if api.passwords, err = api.passwords.Import(rawPasswords); err != nil {
-		return fmt.Errorf("error during passwords import: %w", err)
+	if err := api.passwords.Import(rawPasswords); err != nil {
+		return fmt.Errorf("%w, import decrypted passwords error", err)
 	}
 	return nil
 }
@@ -54,12 +54,12 @@ func (api *API) Export() (string, error) {
 	// export the passwords map to a json representation
 	rawPasswords, err := api.passwords.Export()
 	if err != nil {
-		return "", fmt.Errorf("error during passwords export: %w", err)
+		return "", fmt.Errorf("%w, export passwords error", err)
 	}
 	// encrypt the json representation with the passphrase provided
 	encrypted, err := cipher.Encrypt(rawPasswords, api.passphrase)
 	if err != nil {
-		return "", fmt.Errorf("error during passwords encryption: %w", err)
+		return "", fmt.Errorf("%w, encrypt passwords error", err)
 	}
 	// encode the encrypted data to base64
 	return base64url.EncodeToString(encrypted), nil
@@ -68,12 +68,12 @@ func (api *API) Export() (string, error) {
 // Set sets the password with the given alias, username and password. If it
 // already exists, it will be overwritten.
 func (api *API) Set(alias, username, password string) {
-	api.passwords = api.passwords.Set(alias, username, password)
+	api.passwords.Set(alias, username, password)
 }
 
 // Del deletes the password with the given alias, if it exists.
 func (api *API) Del(alias string) {
-	api.passwords = api.passwords.Del(alias)
+	api.passwords.Del(alias)
 }
 
 // List lists all the passwords in the passwords map. If json is true, it will
@@ -84,8 +84,8 @@ func (api *API) List(json bool) string {
 		return api.passwords.String()
 	}
 	var result string
-	for _, pass := range api.passwords {
-		result += fmt.Sprintf("[%s] %s: %s\n", pass.Alias, pass.Username, pass.Password)
+	for _, pass := range api.passwords.List() {
+		result += fmt.Sprintf("[%s] %s -> %s:%s\n", pass.ID, pass.Alias, pass.Username, pass.Password)
 	}
 	return result
 }
@@ -93,12 +93,12 @@ func (api *API) List(json bool) string {
 // Get returns the password with the given alias. If json is true, it will
 // print the json representation of the password. If json is false, it will
 // print the string representation of the password.
-func (api *API) Get(alias string, json bool) string {
-	if pass := api.passwords.Get(alias); pass != nil {
+func (api *API) Get(id string, json bool) string {
+	if pass := api.passwords.Get(id); pass != nil {
 		if json {
 			return pass.String()
 		}
-		return fmt.Sprintf("[%s] %s: %s\n", alias, pass.Username, pass.Password)
+		return fmt.Sprintf("[%s] %s -> %s:%s\n", id, pass.Alias, pass.Username, pass.Password)
 	}
 	return ""
 }

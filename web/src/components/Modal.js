@@ -20,8 +20,7 @@ export default {
     `,
     methods: {
         close() {
-            this.open = false;
-            $emit('update:open', false);
+            this.$emit('update:open', false);
         }
     }
 }
