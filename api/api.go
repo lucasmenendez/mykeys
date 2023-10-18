@@ -71,9 +71,22 @@ func (api *API) Set(alias, username, password string) {
 	api.passwords.Set(alias, username, password)
 }
 
-// Del deletes the password with the given alias, if it exists.
-func (api *API) Del(alias string) {
-	api.passwords.Del(alias)
+// Del deletes the password with the given id, if it exists.
+func (api *API) Del(id string) {
+	api.passwords.Del(id)
+}
+
+// Get returns the password with the given alias. If json is true, it will
+// print the json representation of the password. If json is false, it will
+// print the string representation of the password.
+func (api *API) Get(id string, json bool) string {
+	if pass := api.passwords.Get(id); pass != nil {
+		if json {
+			return pass.String()
+		}
+		return fmt.Sprintf("[%s] %s -> %s:%s\n", id, pass.Alias, pass.Username, pass.Password)
+	}
+	return ""
 }
 
 // List lists all the passwords in the passwords map. If json is true, it will
@@ -88,17 +101,4 @@ func (api *API) List(json bool) string {
 		result += fmt.Sprintf("[%s] %s -> %s:%s\n", pass.ID, pass.Alias, pass.Username, pass.Password)
 	}
 	return result
-}
-
-// Get returns the password with the given alias. If json is true, it will
-// print the json representation of the password. If json is false, it will
-// print the string representation of the password.
-func (api *API) Get(id string, json bool) string {
-	if pass := api.passwords.Get(id); pass != nil {
-		if json {
-			return pass.String()
-		}
-		return fmt.Sprintf("[%s] %s -> %s:%s\n", id, pass.Alias, pass.Username, pass.Password)
-	}
-	return ""
 }

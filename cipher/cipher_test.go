@@ -19,4 +19,17 @@ func TestEncryptDecrypt(t *testing.T) {
 	if string(decrypted) != input {
 		t.Fatalf("Expected '%s', got '%s'", input, decrypted)
 	}
+
+	if _, err = Decrypt(encrypted, []byte("wrong")); err == nil {
+		t.Fatalf("Expected error during decryption, got nil")
+	}
+	if _, err = Decrypt(encrypted, nil); err == nil {
+		t.Fatalf("Expected error during decryption, got nil")
+	}
+	if _, err = Encrypt([]byte(input), nil); err == nil {
+		t.Fatalf("Expected error during encryption, got nil")
+	}
+	if _, err = Encrypt(nil, []byte(pass)); err != nil {
+		t.Fatalf("Expected nil, got error: %s", err)
+	}
 }

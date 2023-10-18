@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"hash/fnv"
-	"log"
 	"strings"
 )
 
@@ -37,11 +36,6 @@ func (p *Password) String() string {
 	return ""
 }
 
-// List returns a list with a copy of the current Password's.
-func (p *Passwords) List() []*Password {
-	return append([]*Password{}, p.passwords...)
-}
-
 // Export returns the json representation of the password.
 func (p *Password) Export() ([]byte, error) {
 	return json.Marshal(p)
@@ -53,12 +47,16 @@ type Passwords struct {
 	passwords []*Password
 }
 
+// List returns a list with a copy of the current Password's.
+func (p *Passwords) List() []*Password {
+	return append([]*Password{}, p.passwords...)
+}
+
 // String returns the string representation of the passwords. It uses the
 // Export() method to get the json representation of the passwords and then
 // converts it to string.
 func (p *Passwords) String() string {
 	if dump, err := p.Export(); err == nil {
-		log.Println(string(dump))
 		return string(dump)
 	}
 	return ""
@@ -75,6 +73,7 @@ func (p *Passwords) Import(data []byte) error {
 	if err := json.Unmarshal(data, &items); err != nil {
 		return err
 	}
+	p.passwords = []*Password{}
 	for _, item := range items {
 		p.passwords = append(p.passwords, &Password{
 			ID:       item.ID,
@@ -87,10 +86,10 @@ func (p *Passwords) Import(data []byte) error {
 
 }
 
-// Get returns the password with the given alias.
-func (p *Passwords) Get(alias string) *Password {
+// Get returns the password with the given ID.
+func (p *Passwords) Get(id string) *Password {
 	for _, password := range p.passwords {
-		if password.Alias == alias {
+		if password.ID == id {
 			return password
 		}
 	}
@@ -117,7 +116,7 @@ func (p *Passwords) Set(alias, username, password string) {
 	})
 }
 
-// Del deletes the password with the given alias, if it exists.
+// Del deletes the password with the given ID, if it exists.
 func (p *Passwords) Del(id string) {
 	for i, pass := range p.passwords {
 		if pass.ID == id {

@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"crypto/rand"
+	"fmt"
 	"io"
 )
 
@@ -18,6 +19,12 @@ func hashFunc(raw []byte) []byte {
 
 // Encrypt encrypts the given data using the passphrase provided by the user.
 func Encrypt(data, passphrase []byte) ([]byte, error) {
+	if len(data) == 0 {
+		return nil, nil
+	}
+	if len(passphrase) == 0 {
+		return nil, fmt.Errorf("passphrase is empty")
+	}
 	// create the cipher block with the hash of the passphrase provided by the
 	// user
 	block, err := aes.NewCipher(hashFunc(passphrase))
@@ -40,6 +47,12 @@ func Encrypt(data, passphrase []byte) ([]byte, error) {
 
 // Decrypt decrypts the given data using the passphrase provided by the user.
 func Decrypt(data, passphrase []byte) ([]byte, error) {
+	if len(data) == 0 {
+		return nil, nil
+	}
+	if len(passphrase) == 0 {
+		return nil, fmt.Errorf("passphrase is empty")
+	}
 	// create the cipher block with the hash of the passphrase provided by the
 	// user
 	block, err := aes.NewCipher(hashFunc(passphrase))
