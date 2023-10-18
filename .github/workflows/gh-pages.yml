@@ -1,0 +1,28 @@
+name: Publish to GitHub Pages
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GOOS: js
+      GOARCH: wasm
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+          cache: true
+      - name: build wasm
+        run: |
+          go build -o ./web/main.wasm ./cmd/webassembly/main.go
+      - name: copy go wasm js engine
+        run: |
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
+      - name: Deploy gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
+        with:
+          branch: gh-pages
+          folder: web
