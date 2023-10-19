@@ -1,0 +1,59 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Publish binaries
+    runs-on: ubuntu-latest
+    env:
+      GOOS: js
+      GOARCH: wasm
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+          cache: true
+      - name: Build wasm
+        run: |
+          go build -o ./web/mykeys.wasm ./cmd/webassembly/main.go
+      - name: Copy go wasm js engine
+        run: |
+          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
+      - name: Upload mykeys.wasm
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web/mykeys.wasm
+          asset_name: mykeys.wasm
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "mykeys.live release"
+      - name: Upload wasm_exec.js
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web/wasm_exec.js
+          asset_name: wasm_exec.js
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "wasm_exec.js release"
+      - name: Generate hash
+        uses: MCJack123/ghaction-generate-release-hashes@v3
+        with:
+          hash-type: sha1
+          file-name: web/hashes.txt
+      - name: Upload hash
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: web/hashes.txt
+          asset_name: hashes.txt
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "mykeys.live sha1 hash release"
+      
