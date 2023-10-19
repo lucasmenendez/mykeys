@@ -1,4 +1,4 @@
-name: Publish
+name: Release new version
 
 on:
   push:
@@ -6,8 +6,59 @@ on:
       - '*'
 
 jobs:
-  build:
-    name: Publish binaries
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+          cache: true
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          args: --timeout 5m --verbose
+          skip-cache: false
+          skip-pkg-cache: false
+          skip-build-cache: false
+          only-new-issues: true
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.21.x
+          cache: true
+      - name: run test
+        run: |
+          go test -v --race -timeout 15m -coverprofile=./cover.out -json ./... > tests.log
+      - name: convert coverage to html
+        run: go tool cover -html=cover.out -o cover.html
+      - name: print test report
+        run: |
+          set -o pipefail && cat tests.log | node .github/parse-tests.js >> $GITHUB_STEP_SUMMARY
+          echo $GITHUB_STEP_SUMMARY
+      - name: print coverage result
+        run: |
+          go tool cover -func=cover.out > ./cover.txt
+          echo "<details><summary>📏 Tests coverage</summary>" >> $GITHUB_STEP_SUMMARY
+          echo -e "\n\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cat ./cover.txt >> $GITHUB_STEP_SUMMARY
+          echo -e "\`\`\`\n</details>" >> $GITHUB_STEP_SUMMARY
+      - name: store code coverage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: report
+          path: |
+            tests.log
+            cover.txt
+            cover.out
+            cover.html
+  publish:
     runs-on: ubuntu-latest
     env:
       GOOS: js
@@ -24,36 +75,29 @@ jobs:
       - name: Copy go wasm js engine
         run: |
           cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
-      - name: Upload mykeys.wasm
-        uses: svenstaro/upload-release-action@v2
+      - name: Generate checksum
+        uses: jmgilman/actions-generate-checksum@v1
+        with: 
+          output: sha256_checksums.txt
+          patterns: |
+            web/mykeys.wasm
+            web/wasm_exec.js
+      - name: Upload assets
+        uses: softprops/action-gh-release@v1
+        id: upload-release-asset
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: web/mykeys.wasm
-          asset_name: mykeys.wasm
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "mykeys.live release"
-      - name: Upload wasm_exec.js
-        uses: svenstaro/upload-release-action@v2
+          files: |
+            sha256_checksums.txt
+            web/mykeys.wasm
+            web/wasm_exec.js
+      - name: Print assets urls
+        run: |
+          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[0].browser_download_url }}"
+          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[1].browser_download_url }}"
+          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[2].browser_download_url }}"
+      - name: Deploy to github pages
+        uses: JamesIves/github-pages-deploy-action@v4.4.3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: web/wasm_exec.js
-          asset_name: wasm_exec.js
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "wasm_exec.js release"
-      - name: Generate hash
-        uses: MCJack123/ghaction-generate-release-hashes@v3
-        with:
-          hash-type: sha1
-          file-name: web/hashes.txt
-      - name: Upload hash
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: web/hashes.txt
-          asset_name: hashes.txt
-          tag: ${{ github.ref }}
-          overwrite: true
-          body: "mykeys.live sha1 hash release"
+          branch: gh-pages
+          folder: web
       

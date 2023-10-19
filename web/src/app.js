@@ -3,8 +3,7 @@ import OpenPasswords from './components/OpenPasswords.js';
 import SavePasswords from './components/SavePasswords.js';
 import ListPasswords from './components/ListPasswords.js';
 
-import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
-// import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
+import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
 
 const app = createApp({
     data() {
@@ -52,7 +51,7 @@ const app = createApp({
     methods: {
         async setupWebAssembly() {
             const go = new Go();
-            const result = await WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject);
+            const result = await WebAssembly.instantiateStreaming(fetch("mykeys.wasm"), go.importObject);
             go.run(result.instance);
         },
         checkURLParams() {

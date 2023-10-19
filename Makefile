@@ -6,7 +6,7 @@ cli:
 	chmod +x ./bin/mykeys-cli
 
 web:
-	+rm -rf ./web/main.wasm
-	GOOS=js GOARCH=wasm go build -o ./web/main.wasm ./cmd/webassembly/main.go
+	+rm -rf ./web/mykeys.wasm
+	GOOS=js GOARCH=wasm go build -o ./web/mykeys.wasm ./cmd/webassembly/main.go
 
 all: cli web
