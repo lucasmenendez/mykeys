@@ -8,6 +8,33 @@ import (
 	"github.com/lucasmenendez/mykeys-cli/passwords"
 )
 
+var (
+	ErrUnsecurePassphrase = fmt.Errorf("the passphrase does not meet the security requirements")
+)
+
+// securePassphrase returns true if the given passphrase is secure or not. A
+// secure passphrase must have at least 8 characters, one lower case letter,
+// one upper case letter and one number.
+func securePassphrase(passphrase string) bool {
+	if len(passphrase) < 8 {
+		return false
+	}
+	hasLowerLetter := false
+	hasUpperLetter := false
+	hasNumber := false
+	for _, c := range passphrase {
+		switch {
+		case c >= 'a' && c <= 'z':
+			hasLowerLetter = true
+		case c >= 'A' && c <= 'Z':
+			hasUpperLetter = true
+		case c >= '0' && c <= '9':
+			hasNumber = true
+		}
+	}
+	return hasLowerLetter && hasUpperLetter && hasNumber
+}
+
 // API is the struct that represents the command line interface of MyKeys. Ir
 // has the filepath of the passwords file, the passphrase to encrypt and
 // decrypt it and a password map.
@@ -19,11 +46,14 @@ type API struct {
 // New returns an empty API with the given  passphrase. It also inits
 // the passwords map. It converts the passphrase from string to a slice of
 // bytes.
-func New(passphrase string) *API {
+func New(passphrase string) (*API, error) {
+	if !securePassphrase(passphrase) {
+		return nil, ErrUnsecurePassphrase
+	}
 	return &API{
 		passphrase: []byte(passphrase),
 		passwords:  new(passwords.Passwords),
-	}
+	}, nil
 }
 
 // Import imports the passwords from the base64url encoded string and passphrase

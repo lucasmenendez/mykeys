@@ -3,15 +3,43 @@ package api
 import "testing"
 
 const (
-	testID        = "5cd0baaeadbb55c8f432ad227bd8d96c"
-	testAlias     = "alias"
-	testUsername  = "username"
-	testPassword  = "password"
-	testPassphase = "passphrase"
+	testID             = "5cd0baaeadbb55c8f432ad227bd8d96c"
+	testAlias          = "alias"
+	testUsername       = "username"
+	testPassword       = "password"
+	testPassphase      = "P4ssphrase"
+	testWrongPassphase = "W4ssphrase"
 )
 
+func Test_securePassphrase(t *testing.T) {
+	if securePassphrase("") {
+		t.Fatalf("Expected empty passphrase to be unsecure")
+	}
+	if securePassphrase("12345678") {
+		t.Fatalf("Expected 12345678 passphrase to be unsecure")
+	}
+	if securePassphrase("12345678a") {
+		t.Fatalf("Expected 12345678a passphrase to be unsecure")
+	}
+	if securePassphrase("12345678A") {
+		t.Fatalf("Expected 12345678A passphrase to be unsecure")
+	}
+	if securePassphrase("aaaaAAAA") {
+		t.Fatalf("Expected aaaaAAAA passphrase to be unsecure")
+	}
+	if !securePassphrase("123456aA") {
+		t.Fatalf("Expected 123456aA passphrase to be secure")
+	}
+	if !securePassphrase("123456aaAA") {
+		t.Fatalf("Expected 123456aaAA passphrase to be secure")
+	}
+}
+
 func TestNew(t *testing.T) {
-	api := New(testPassphase)
+	api, err := New(testPassphase)
+	if err != nil {
+		t.Fatalf("Expected no error, got %s", err)
+	}
 	if api == nil {
 		t.Fatalf("Expected API to be created, got nil")
 	}
@@ -24,7 +52,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestAPI_ImportExport(t *testing.T) {
-	api := New(testPassphase)
+	api, _ := New(testPassphase)
 	if err := api.Import("a"); err == nil {
 		t.Fatalf("Expected error, got nil")
 	}
@@ -34,7 +62,7 @@ func TestAPI_ImportExport(t *testing.T) {
 		t.Fatalf("Expected no error, got %s", err)
 	}
 
-	api.passphrase = []byte("wrong")
+	api.passphrase = []byte(testWrongPassphase)
 
 	if err := api.Import(emptyDump); err == nil {
 		t.Fatal("Expected error, got nil")
@@ -75,7 +103,7 @@ func TestAPI_ImportExport(t *testing.T) {
 }
 
 func TestAPI_SetDel(t *testing.T) {
-	api := New(testPassphase)
+	api, _ := New(testPassphase)
 	api.Set(testAlias, testUsername, testPassword)
 	if l := len(api.passwords.List()); l != 1 {
 		t.Fatalf("Expected passwords to have 1 element, got %d", l)
@@ -90,7 +118,7 @@ func TestAPI_SetDel(t *testing.T) {
 }
 
 func TestAPI_Get(t *testing.T) {
-	api := New(testPassphase)
+	api, _ := New(testPassphase)
 	api.Set(testAlias, testUsername, testPassword)
 	expectedStr := "[" + testID + "] " + testAlias + " -> " + testUsername + ":" + testPassword + "\n"
 	if resultStr := api.Get(testID, false); resultStr != expectedStr {
@@ -109,7 +137,7 @@ func TestAPI_Get(t *testing.T) {
 }
 
 func TestAPI_List(t *testing.T) {
-	api := New(testPassphase)
+	api, _ := New(testPassphase)
 	api.Set(testAlias, testUsername, testPassword)
 	expectedStr := "[" + testID + "] " + testAlias + " -> " + testUsername + ":" + testPassword + "\n"
 	if resultStr := api.List(false); resultStr != expectedStr {

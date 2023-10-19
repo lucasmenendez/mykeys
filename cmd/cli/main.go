@@ -68,7 +68,11 @@ func main() {
 		return
 	}
 	// Create CLI
-	mykeysAPI := api.New(*passphrase)
+	mykeysAPI, err := api.New(*passphrase)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	passwords, err := openfile(*filepath)
 	if err != nil {
 		fmt.Println(err)

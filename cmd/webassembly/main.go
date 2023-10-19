@@ -4,7 +4,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"syscall/js"
 
 	"github.com/lucasmenendez/mykeys-cli/api"
@@ -30,10 +32,21 @@ func initCLI(b64, passphrase js.Value) (*api.API, error) {
 		return nil, fmt.Errorf("no passphrase provided")
 	}
 	// Create CLI with empty filepath and the provided passphrase
-	mykeysAPI := api.New(passphrase.String())
+	mykeysAPI, err := api.New(passphrase.String())
+	if err != nil {
+		if errors.Is(err, api.ErrUnsecurePassphrase) {
+			return nil, fmt.Errorf("The passphrase does not meet the security " +
+				"requirements, it must have at least 8 characters, one lower " +
+				"case letter, one upper case letter and one number.")
+		}
+		return nil, err
+	}
 	// Import from base64 or read it from the file
 	if b64.String() != "" {
 		if err := mykeysAPI.Import(b64.String()); err != nil {
+			if strings.Contains(err.Error(), "message authentication failed") {
+				return nil, fmt.Errorf("Wrong passphrase provided.")
+			}
 			return nil, err
 		}
 	}
