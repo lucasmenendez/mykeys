@@ -1,7 +1,7 @@
 [![Last release](https://img.shields.io/github/v/release/lucasmenendez/mykeys?color=purple)](https://github.com/lucasmenendez/mykeys/releases/latest)
 [![GoDoc](https://godoc.org/github.com/lucasmenendez/mykeys?status.svg)](https://godoc.org/github.com/lucasmenendez/mykeys) 
 [![Go Report Card](https://goreportcard.com/badge/github.com/lucasmenendez/mykeys)](https://goreportcard.com/report/github.com/lucasmenendez/mykeys)
-[![test](https://github.com/lucasmenendez/mykeys/workflows/test/badge.svg)](https://github.com/lucasmenendez/mykeys/actions?query=workflow%3Atest)
+[![Lint and test](https://github.com/lucasmenendez/mykeys/actions/workflows/test.yml/badge.svg)](https://github.com/lucasmenendez/mykeys/actions/workflows/test.yml)
 [![license](https://img.shields.io/github/license/lucasmenendez/mykeys)](LICENSE)
 
 # 🔐 MyKeys.live

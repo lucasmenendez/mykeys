@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lucasmenendez/mykeys-cli/api"
+	"github.com/lucasmenendez/mykeys/api"
 )
 
 const (

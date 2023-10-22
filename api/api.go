@@ -3,9 +3,9 @@ package api
 import (
 	"fmt"
 
-	"github.com/lucasmenendez/mykeys-cli/base64url"
-	"github.com/lucasmenendez/mykeys-cli/cipher"
-	"github.com/lucasmenendez/mykeys-cli/passwords"
+	"github.com/lucasmenendez/mykeys/base64url"
+	"github.com/lucasmenendez/mykeys/cipher"
+	"github.com/lucasmenendez/mykeys/passwords"
 )
 
 var (

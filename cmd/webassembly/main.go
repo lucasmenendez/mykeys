@@ -9,7 +9,7 @@ import (
 	"strings"
 	"syscall/js"
 
-	"github.com/lucasmenendez/mykeys-cli/api"
+	"github.com/lucasmenendez/mykeys/api"
 )
 
 const (
