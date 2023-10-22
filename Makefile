@@ -8,5 +8,6 @@ cli:
 web:
 	+rm -rf ./web/mykeys.wasm
 	GOOS=js GOARCH=wasm go build -o ./web/mykeys.wasm ./cmd/webassembly/main.go
+	@cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
 
 all: cli web

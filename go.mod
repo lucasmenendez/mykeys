@@ -1,3 +1,3 @@
-module github.com/lucasmenendez/mykeys-cli
+module github.com/lucasmenendez/mykeys
 
 go 1.21.1

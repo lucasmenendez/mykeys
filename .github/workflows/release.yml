@@ -95,9 +95,13 @@ jobs:
           echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[0].browser_download_url }}"
           echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[1].browser_download_url }}"
           echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[2].browser_download_url }}"
-      - name: Deploy to github pages
-        uses: JamesIves/github-pages-deploy-action@v4.4.3
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
         with:
-          branch: gh-pages
-          folder: web
-      
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: Build container image
+        run: docker build -t ${{ secrets.REGISTRY_NAME }}/mykeys:$(echo $GITHUB_SHA | head -c7) .
+      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+        run: doctl registry login --expiry-seconds 1200
+      - name: Push image to DigitalOcean Container Registry
+        run: docker push ${{ secrets.REGISTRY_NAME }}/mykeys:$(echo $GITHUB_SHA | head -c7)
