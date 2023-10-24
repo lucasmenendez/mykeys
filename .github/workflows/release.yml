@@ -6,58 +6,6 @@ on:
       - '*'
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Install Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: 1.21.x
-          cache: true
-      - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          args: --timeout 5m --verbose
-          skip-cache: false
-          skip-pkg-cache: false
-          skip-build-cache: false
-          only-new-issues: true
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.21.x
-          cache: true
-      - name: run test
-        run: |
-          go test -v --race -timeout 15m -coverprofile=./cover.out -json ./... > tests.log
-      - name: convert coverage to html
-        run: go tool cover -html=cover.out -o cover.html
-      - name: print test report
-        run: |
-          set -o pipefail && cat tests.log | node .github/parse-tests.js >> $GITHUB_STEP_SUMMARY
-          echo $GITHUB_STEP_SUMMARY
-      - name: print coverage result
-        run: |
-          go tool cover -func=cover.out > ./cover.txt
-          echo "<details><summary>📏 Tests coverage</summary>" >> $GITHUB_STEP_SUMMARY
-          echo -e "\n\`\`\`" >> $GITHUB_STEP_SUMMARY
-          cat ./cover.txt >> $GITHUB_STEP_SUMMARY
-          echo -e "\`\`\`\n</details>" >> $GITHUB_STEP_SUMMARY
-      - name: store code coverage artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: report
-          path: |
-            tests.log
-            cover.txt
-            cover.out
-            cover.html
   publish:
     runs-on: ubuntu-latest
     env:
@@ -90,18 +38,3 @@ jobs:
             sha256_checksums.txt
             web/mykeys.wasm
             web/wasm_exec.js
-      - name: Print assets urls
-        run: |
-          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[0].browser_download_url }}"
-          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[1].browser_download_url }}"
-          echo "${{ fromJSON(steps.upload-release-asset.outputs.assets)[2].browser_download_url }}"
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      - name: Build container image
-        run: docker build -t ${{ secrets.REGISTRY_NAME }}/mykeys:$(echo $GITHUB_SHA | head -c7) .
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 1200
-      - name: Push image to DigitalOcean Container Registry
-        run: docker push ${{ secrets.REGISTRY_NAME }}/mykeys:$(echo $GITHUB_SHA | head -c7)
