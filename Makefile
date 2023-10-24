@@ -10,4 +10,8 @@ web:
 	GOOS=js GOARCH=wasm go build -o ./web/mykeys.wasm ./cmd/webassembly/main.go
 	@cp "$$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
 
+docker:
+	docker build -t mykeys .
+	docker run -d --rm -p 8080:80 mykeys
+
 all: cli web
