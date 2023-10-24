@@ -5,6 +5,8 @@ import ListPasswords from './components/ListPasswords.js';
 
 import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js'
 
+console.log("Checkout the artifacts checksums at /sha256_checksums.txt");
+
 const app = createApp({
     data() {
         return {
