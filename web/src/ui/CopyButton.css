@@ -1,0 +1,20 @@
+.copy-button {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+}
+
+.copy-button:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: 2px;
+}
+
+.copy-button .button-text {
+    margin-left: 12px;
+    font-size: 1.1em;
+}
+
+.copy-button.button-style .button-text {
+    margin-left: 0;
+    font-size: 1em;
+}

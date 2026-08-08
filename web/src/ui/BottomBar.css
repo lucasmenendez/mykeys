@@ -1,0 +1,89 @@
+.bottombar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    min-height: var(--bottombar-height);
+    background: var(--pico-background-color);
+    padding: 0 0.75em;
+    border-top: 1px solid;
+    z-index: 800;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+
+    color: var(--pico-muted-color);
+}
+
+.bottombar .status-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    min-width: 0;
+}
+
+.bottombar .file-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.bottombar .file-status .icon {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.bottombar .file-status .name {
+    max-width: 20rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--pico-color);
+    font-weight: 500;
+}
+
+.bottombar .no-file {
+    font-style: italic;
+}
+
+.bottombar .changes {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--pico-muted-color);
+    user-select: none;
+}
+
+.bottombar .changes.clickable {
+    color: var(--pico-primary);
+    cursor: pointer;
+}
+
+.bottombar .changes.clickable:hover {
+    color: var(--pico-primary-hover);
+    text-decoration: underline;
+}
+
+.bottombar .changes-panel {
+    position: absolute;
+    bottom: calc(100% + 1rem);
+    left: 0;
+    width: min(90vw, 22rem);
+    max-height: 50vh;
+    overflow-y: auto;
+    padding: 0.5rem 0.75rem;
+    background: var(--pico-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    box-shadow: 0 -4px 12px rgb(0 0 0 / 10%);
+    z-index: 900;
+}
+
+@media only screen and (max-width: 768px) {
+    .bottombar .tips {
+        display: none;
+    }
+}

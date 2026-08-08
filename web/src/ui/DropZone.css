@@ -1,0 +1,33 @@
+.drop-zone {
+    position: relative;
+    margin: 0 auto;
+    max-width: 1000px;
+    height: 100%;
+}
+
+.drop-zone::after {
+    content: "Drop your passwords here\A file or bookmark — we'll open it for you";
+    white-space: pre-line;
+    position: fixed;
+    inset: 0;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5em;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--pico-contrast-inverse);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.drop-zone.drag-over::after {
+    opacity: 1;
+}

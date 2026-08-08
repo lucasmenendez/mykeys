@@ -1,0 +1,32 @@
+.modal-inner {
+    width: min(90vw, 26rem);
+    max-height: calc(100vh - var(--pico-spacing) * 2);
+    overflow: auto;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 24px;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+button.modal-close {
+    border: 0;
+    background: transparent;
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
+    color: var(--pico-contrast);
+}
+
+.modal-content {
+    padding: 16px;
+}

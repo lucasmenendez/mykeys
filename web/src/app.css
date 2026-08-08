@@ -1,0 +1,43 @@
+:root {
+    --topbar-height: 3rem;
+    --bottombar-height: 3rem;
+    --pico-border-radius: 0;
+    --pico-font-size: 87.5%; /* 14px, constant — overrides Pico's 16→21px ladder */
+}
+
+html,
+body,
+#app {
+    height: 100%;
+}
+
+main {
+    min-height: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding-top: calc(var(--topbar-height) + 0.5rem);
+    padding-bottom: calc(var(--bottombar-height) + 0.5rem);
+}
+
+.wasm-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--pico-background-color, #fff);
+    color: var(--pico-color);
+    font-size: 1rem;
+}
+
+.wasm-gate p {
+    margin: 0;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--pico-muted-border-color);
+    border-left: 3px solid var(--pico-color-blue-500);
+    background: var(--pico-background-color);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 12%);
+}

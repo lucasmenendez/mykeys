@@ -1,0 +1,21 @@
+.confirm-dialog .message {
+    margin: 0 0 1.25rem;
+}
+
+.confirm-dialog .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}
+
+.confirm-dialog .actions .delete {
+    color: var(--pico-color-red-500);
+    background: transparent;
+    border-color: currentColor;
+}
+
+.confirm-dialog .actions .delete:hover {
+    background: var(--pico-color-red-500);
+    color: var(--pico-contrast-inverse);
+    border-color: var(--pico-color-red-500);
+}

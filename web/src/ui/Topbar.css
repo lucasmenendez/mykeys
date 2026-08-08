@@ -1,0 +1,153 @@
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: var(--topbar-height);
+    background: var(--pico-background-color);
+    padding: 0 1.5em;
+    border-bottom: 1px solid;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.topbar ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.topbar li {
+    padding: 0;
+}
+
+.topbar .topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.topbar .actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.topbar .action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--pico-contrast);
+    font: inherit;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.topbar .action:hover {
+    background-color: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}
+
+.topbar .actions li.pinned .action {
+    background: var(--pico-contrast);
+    color: var(--pico-contrast-inverse);
+}
+
+.topbar .actions li.pinned .action:hover {
+    background: var(--pico-contrast-hover);
+    color: var(--pico-contrast-inverse);
+}
+
+.topbar .action .icon {
+    display: inline-flex;
+}
+
+.topbar .mobile-menu {
+    display: none;
+    position: relative;
+}
+
+.topbar .hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--pico-contrast);
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease;
+}
+
+.topbar .hamburger:hover {
+    background-color: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}
+
+.topbar .mobile-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    min-width: 12rem;
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    background: var(--pico-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+}
+
+.topbar .mobile-panel li {
+    width: 100%;
+    margin: 0;
+}
+
+.topbar .mobile-panel button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 44px;
+    padding: 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--pico-contrast);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease;
+}
+
+.topbar .mobile-panel button:hover {
+    background-color: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}
+
+.topbar .mobile-panel .icon {
+    display: inline-flex;
+}
+
+@media only screen and (max-width: 768px) {
+    .topbar .actions li:not(.pinned) {
+        display: none;
+    }
+
+    .topbar .actions li.pinned .action .text {
+        display: none;
+    }
+
+    .topbar .mobile-menu {
+        display: flex;
+        align-items: center;
+    }
+}
