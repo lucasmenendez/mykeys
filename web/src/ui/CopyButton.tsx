@@ -57,6 +57,7 @@ export default function CopyButton(props: CopyButtonProps) {
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
+            event.stopPropagation();
             void copyToClipboard();
         }
     };

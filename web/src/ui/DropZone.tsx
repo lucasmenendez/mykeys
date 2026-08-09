@@ -23,6 +23,11 @@ export type DropZoneProps = ParentProps<{
     onLoad: (file: LoadedFile) => void;
 }>;
 
+// The `?data=` URL param is a one-shot startup load: consume it only once per
+// page load, not on every mount (e.g. when returning from the Help page the
+// workspace remounts and must not reload a vault that is already open).
+let urlDataHandled = false;
+
 export default function DropZone(
     props: DropZoneProps,
 ) {
@@ -144,12 +149,15 @@ export default function DropZone(
     if (!isServer) {
         onMount(() => {
             document.addEventListener("paste", handlePaste,);
+
+            if (urlDataHandled) return;
+            urlDataHandled = true;
+
             const params = new URLSearchParams(
                 window.location.search,
             );
 
-            const data = params.get("data");
-            loadText(LoadedFileSource.URL, data ?? "");
+            loadText(LoadedFileSource.URL, params.get("data") ?? "");
         });
 
         onCleanup(() => {

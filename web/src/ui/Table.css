@@ -12,9 +12,14 @@
     min-width: max-content;
 }
 
-.table-row,
 .table-header {
     display: contents;
+}
+
+.table-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: inherit;
 }
 
 .table-row.clickable .table-cell {
@@ -58,66 +63,14 @@
     color: var(--pico-muted-color);
 }
 
-.table .dots-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    margin-bottom: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--pico-muted-color);
-    cursor: pointer;
-    border-radius: var(--pico-border-radius);
-    transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.table .dots-button:hover {
-    background: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
-    color: var(--pico-color);
-}
-
-.table .table-menu {
-    position: absolute;
-    top: calc(100% + 0.25rem);
-    left: 0;
-    min-width: 12rem;
-    padding: 0.25rem;
-    display: flex;
-    flex-direction: column;
-    background: var(--pico-background-color);
-    border: 1px solid var(--pico-muted-border-color);
-    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
-    z-index: 5;
-}
-
-.table .table-menu .menu-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: 100%;
-    margin: 0;
-    padding: 0.5em 0.75em;
-    border: 0;
-    background: transparent;
-    color: var(--pico-contrast);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    border-radius: var(--pico-border-radius);
-    transition: background-color 0.15s ease;
-}
-
-.table .table-menu .menu-item:hover {
-    background: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
-}
-
 .table-header-sticky>.table-cell {
     position: sticky;
+    display: flex;
     top: 0;
     z-index: 2;
-
+    padding: 0;
+    justify-content: start;
     background: var(--pico-background-color);
+    align-items: center;
+    gap: 1em;
 }

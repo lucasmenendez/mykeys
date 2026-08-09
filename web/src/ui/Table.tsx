@@ -49,7 +49,7 @@ function TableRoot(props: TableProps) {
 
 function TableRow(props: TableRowProps) {
     const handleKeyDown = (event: KeyboardEvent) => {
-        if (!props.onClick) return;
+        if (!props.onClick || event.defaultPrevented) return;
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             props.onClick(event as unknown as MouseEvent);
