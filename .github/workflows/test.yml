@@ -1,32 +1,33 @@
 name: Lint and test
 on: [push, pull_request]
+
+permissions:
+  contents: read
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
       - name: Install Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v7
         with:
-          go-version: 1.21.x
+          go-version-file: go.mod
           cache: true
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v3
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: latest
+          version: v2.15.0
           args: --timeout 5m --verbose
-          skip-cache: false
-          skip-pkg-cache: false
-          skip-build-cache: false
           only-new-issues: true
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
-          go-version: 1.21.x
+          go-version-file: go.mod
           cache: true
       - name: run test
         run: |
@@ -45,7 +46,7 @@ jobs:
           cat ./cover.txt >> $GITHUB_STEP_SUMMARY
           echo -e "\`\`\`\n</details>" >> $GITHUB_STEP_SUMMARY
       - name: store code coverage artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: report
           path: |

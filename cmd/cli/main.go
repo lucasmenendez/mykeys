@@ -44,7 +44,7 @@ func savefile(path, content string) error {
 	if err != nil {
 		return fmt.Errorf("error during passwords saving: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	if _, err := f.WriteString(content); err != nil {
 		return fmt.Errorf("error during passwords saving: %w", err)
