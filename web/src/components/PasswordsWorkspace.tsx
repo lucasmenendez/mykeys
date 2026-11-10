@@ -1,6 +1,6 @@
 import { FolderOpen, FilePlusCorner, SquarePlus, SaveCheck, Lock, CircleHelp } from 'lucide-solid';
 
-import { createMemo, createSignal, type ParentProps } from "solid-js";
+import { createEffect, createMemo, createSignal, on, onCleanup, onMount, Show, type ParentProps } from "solid-js";
 
 import {
     buildVaultExport,
@@ -20,7 +20,16 @@ import EditPasswordModal from "~/components/EditPasswordModal";
 import SavePasswordsModal from "~/components/SavePasswordsModal";
 import { confirm } from "~/ui/ConfirmDialog";
 import { toast } from "~/ui/Toaster";
-import { fileToLoadedFile } from "~/lib/vaultFile";
+import VaultList from "~/components/VaultList";
+import {
+    clearPendingVault,
+    isExtension,
+    onPendingVault,
+    peekPendingVault,
+    type PendingVault,
+} from "~/lib/platform";
+import { findVaultBookmarkIdByUrl } from "~/lib/bookmarks";
+import { fileToLoadedFile, textToLoadedFile } from "~/lib/vaultFile";
 import { navigateHelp } from "~/lib/hashRoute";
 
 export default function PasswordsWorkspace(
@@ -40,6 +49,14 @@ export default function PasswordsWorkspace(
 
     const hasSaveableChanges = () =>
         (state.changes?.some((change) => change.type !== "open") ?? false);
+
+    // Saving is not only about pending edits anymore: the dialog also offers
+    // copy / download / open / update bookmark, so it stays available while a
+    // vault is open or there is something to export.
+    const canSave = () =>
+        !!state.encrypted ||
+        (state.passwords?.length ?? 0) > 0 ||
+        hasSaveableChanges();
 
     const generateAndShow = (passphrase: string) => {
         const result = buildVaultExport(state, passphrase);
@@ -78,11 +95,22 @@ export default function PasswordsWorkspace(
     };
 
     const lockVault = async () => {
+        // In the extension, locking also closes the vault so the side panel
+        // returns to the vault list, where any bookmark can be opened again.
+        const backToVaults = isExtension();
+
         const ok = await confirm({
-            message: "Lock the vault? The passphrase and decrypted passwords will be cleared from memory. Unsaved changes will be kept so you can save them after unlocking again.",
+            message: backToVaults
+                ? "Lock the vault? The passphrase and decrypted passwords will be cleared from memory and you will go back to your vaults. Unsaved changes will be lost."
+                : "Lock the vault? The passphrase and decrypted passwords will be cleared from memory. Unsaved changes will be kept so you can save them after unlocking again.",
             confirmLabel: "Lock",
         });
         if (!ok) return;
+
+        if (backToVaults) {
+            reset();
+            return;
+        }
 
         setState({
             passphrase: "",
@@ -96,6 +124,14 @@ export default function PasswordsWorkspace(
         (state.passphrase?.length ?? 0) == 0,
     );
 
+    // The vault list is the home screen of the extension: it must disappear as
+    // soon as there is something being worked on, even if no vault was opened
+    // (e.g. a password list created from scratch).
+    const showVaultList = () =>
+        isExtension() &&
+        !state.encrypted &&
+        (state.passwords?.length ?? 0) === 0;
+
     const confirmDiscard = async (): Promise<boolean> => {
         if ((state.passwords?.length ?? 0) === 0) return true;
 
@@ -106,16 +142,61 @@ export default function PasswordsWorkspace(
         });
     };
 
-    const onLoad = async (file: LoadedFile) => {
+    const onLoad = async (file: LoadedFile, sourceUrl?: string) => {
         if (!(await confirmDiscard())) return;
 
         reset();
-        setState("encrypted", file);
+
+        // A vault opened through its bookmark URL (e.g. a local
+        // chrome-extension:// bookmark in a tab) only carries the URL, so the
+        // matching bookmark is resolved to keep "Update bookmark" working.
+        let bookmarkId = file.bookmarkId;
+        if (!bookmarkId && isExtension()) {
+            const url = sourceUrl ??
+                (file.source === LoadedFileSource.URL ? window.location.href : "");
+            if (url) {
+                bookmarkId = await findVaultBookmarkIdByUrl(url);
+            }
+        }
+
+        setState("encrypted", { ...file, bookmarkId });
         recordChange(state, setState, {
             type: "open",
             source: file.source,
         });
     }
+
+    /** Loads a vault handed over by `open.html` (local bookmark hand-off). */
+    const applyPendingVault = async (pending?: PendingVault) => {
+        const value = pending ?? await peekPendingVault();
+        if (!value || state.encrypted) return;
+
+        const file = textToLoadedFile(LoadedFileSource.URL, value.data);
+        if (!file) {
+            await clearPendingVault();
+            return;
+        }
+
+        await onLoad(file, value.url);
+        if (state.encrypted) {
+            await clearPendingVault();
+        }
+    };
+
+    onMount(() => {
+        void applyPendingVault();
+        onCleanup(onPendingVault((pending) => void applyPendingVault(pending)));
+    });
+
+    // A handed-over vault that arrived while another vault was open is applied
+    // as soon as the panel goes back to the vault list.
+    createEffect(on(
+        () => !!state.encrypted,
+        (hasVault) => {
+            if (!hasVault) void applyPendingVault();
+        },
+        { defer: true },
+    ));
 
     const loadFile = async (
         source: LoadedFileSource,
@@ -217,7 +298,7 @@ export default function PasswordsWorkspace(
                         handler: navigateHelp,
                         icon: (<CircleHelp size={16} strokeWidth={1} />),
                     },
-                    ...(hasSaveableChanges()
+                    ...(canSave()
                         ? [{
                             text: "Save",
                             handler: handleSaveClick,
@@ -253,6 +334,7 @@ export default function PasswordsWorkspace(
                 open={saving()}
                 result={savedResult()}
                 fileName={saveFileName()}
+                bookmarkId={state.encrypted?.bookmarkId}
                 onClose={() => {
                     setSaving(false);
                     setSavedResult("");
@@ -260,6 +342,9 @@ export default function PasswordsWorkspace(
                 onChangePassphrase={() => setSavePassphraseOpen(true)}
             />
             <main>
+                <Show when={showVaultList()}>
+                    <VaultList onOpen={onLoad} />
+                </Show>
                 {props.children}
             </main>
             <BottomBar

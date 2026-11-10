@@ -54,3 +54,27 @@ jobs:
             cover.txt
             cover.out
             cover.html
+  extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Install web dependencies
+        run: npm --prefix ./web ci
+      - name: Type check the web app
+        run: npm --prefix ./web run typecheck
+      - name: Build and package the extension
+        run: make extension-zip
+      - name: store extension artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: extension
+          path: extension.zip

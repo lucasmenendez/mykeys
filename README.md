@@ -94,6 +94,28 @@ make serve
 ```
 Go to [localhost:5500](http://127.0.0.1:5500) to check a demo.
 
+### 🧩 Browser extension
+The Chrome extension runs **the very same UI** as the web app inside the side panel. It lists the bookmarks that hold a vault (`?data=…`), opens them with your passphrase, and locking a vault takes you back to that list so you can reopen any bookmark. When you save changes, **Update bookmark** points the bookmark you opened at the new version of the vault. New vaults are bookmarked with a split button (like GitHub's merge strategies) that picks between **online** (`mykeys.live`, works anywhere) and **locally** (`chrome-extension://…`, works offline), asking for the bookmark name in a dialog. Local bookmarks open a small hand-off page: Chrome does not let an extension open its side panel without a click, so it asks for one and then loads the vault in the panel.
+
+#### Build it
+```sh
+# WebAssembly core + web UI, assembled into dist/extension
+make extension
+
+# optional: package it as ./extension.zip
+make extension-zip
+
+# optional: sign it as ./extension.crx (same key as the release secret)
+make crx CHROME_KEY=extension.pem
+```
+
+#### Load it
+1. Open `chrome://extensions` and enable *Developer mode*.
+2. *Load unpacked* and select `dist/extension`.
+3. Click the toolbar icon and the side panel opens directly (Chrome 116+).
+
+Each release also ships a self-signed `extension.crx` for managed deployments (policies such as `ExtensionInstallForcelist`). Chrome on stable Windows/macOS refuses to install CRX files downloaded from a plain link, so for regular users the zip (or the Chrome Web Store) is the way to go.
+
 ## Credits
 
 Thanks to much to my CSS Grid teacher Sandra Laguna and to my professional beta testers [Pablo Duque](https://github.com/pabloduque0), [Mario Rodriguez](https://github.com/mapno), [Marcos Stival](https://github.com/mrksph), [Alberto Rojas](https://github.com/r0jasx) and [Manuel Méndez](https://www.linkedin.com/in/manuel-m%C3%A9ndez-garc%C3%ADa-0ba16316a/).

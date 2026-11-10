@@ -11,6 +11,8 @@ import {
     type SetStoreFunction,
 } from "solid-js/store";
 
+import { wasmUrl } from "~/lib/platform";
+
 export type AppPassword = {
     id?: string;
     alias: string;
@@ -32,6 +34,8 @@ export type LoadedFile = {
     size: number;
     source: LoadedFileSource;
     content: string;
+    /** Chrome bookmark this vault was opened from (extension only). */
+    bookmarkId?: string;
 };
 
 export type AppState = {
@@ -154,7 +158,7 @@ export function AppStateProvider(
         try {
             const go = new Go();
             const result = await WebAssembly.instantiateStreaming(
-                fetch("/mykeys.wasm"),
+                fetch(wasmUrl()),
                 go.importObject,
             );
             void go.run(result.instance);
