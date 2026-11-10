@@ -1,0 +1,76 @@
+.table-wrapper {
+    width: 100%;
+    /* margin-inline: calc(50% - 50vw); */
+    max-height: calc(100vh - var(--topbar-height) - var(--bottombar-height) - 1rem);
+    max-height: calc(100dvh - var(--topbar-height) - var(--bottombar-height) - 1rem);
+    overflow: auto;
+}
+
+.table {
+    display: grid;
+    width: 100%;
+    min-width: max-content;
+}
+
+.table-header {
+    display: contents;
+}
+
+.table-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: inherit;
+}
+
+.table-row.clickable .table-cell {
+    cursor: pointer;
+}
+
+.table-row:focus-visible .table-cell {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: -2px;
+}
+
+.table-row.clickable:hover .table-cell {
+    background: color-mix(in srgb, var(--pico-primary) 6%, transparent);
+}
+
+.table-cell {
+    min-width: 0;
+    padding: 0.75rem 1rem;
+
+    border-bottom: 1px solid var(--pico-muted-border-color);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table-header>.table-cell {
+    font-weight: 600;
+    background: var(--pico-background-color);
+
+    border-bottom-width: 2px;
+    line-height: 2rem;
+}
+
+.table-header .table-menu-cell {
+    position: relative;
+    overflow: visible;
+}
+
+.table-cell.row-index {
+    color: var(--pico-muted-color);
+}
+
+.table-header-sticky>.table-cell {
+    position: sticky;
+    display: flex;
+    top: 0;
+    z-index: 2;
+    padding: 0;
+    justify-content: start;
+    background: var(--pico-background-color);
+    align-items: center;
+    gap: 1em;
+}

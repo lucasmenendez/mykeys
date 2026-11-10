@@ -1,0 +1,7 @@
+.git
+.gitignore
+bin/
+web/node_modules
+web/.output
+web/pnpm-lock.yaml
+**/.DS_Store

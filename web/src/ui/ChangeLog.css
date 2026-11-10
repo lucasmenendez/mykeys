@@ -1,0 +1,57 @@
+.change-log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.change-log li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.change-log li:last-child {
+    border-bottom: none;
+}
+
+.change-log .icon {
+    display: inline-flex;
+    color: var(--pico-muted-color);
+}
+
+.change-log li.open .icon {
+    color: var(--pico-color-blue-500);
+}
+
+.change-log li.create .icon {
+    color: var(--pico-color-green-500);
+}
+
+.change-log li.update .icon {
+    color: var(--pico-color-zinc-500);
+}
+
+.change-log li.delete .icon {
+    color: var(--pico-color-red-500);
+}
+
+.change-log .text {
+    flex: 1;
+    font-size: 1.25em;
+}
+
+.change-log .time {
+    font-size: 1.1em;
+    color: var(--pico-muted-color);
+    white-space: nowrap;
+    cursor: help;
+}
+
+.change-log-empty {
+    margin: 0;
+    color: var(--pico-muted-color);
+}

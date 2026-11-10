@@ -1,0 +1,63 @@
+.tooltip-menu {
+    display: inline-flex;
+}
+
+.tooltip-menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--pico-muted-color);
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.tooltip-menu-button:hover {
+    background: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+    color: var(--pico-color);
+}
+
+.tooltip-menu-button:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: 2px;
+}
+
+.tooltip-menu-panel {
+    min-width: 12rem;
+    max-width: calc(100vw - 16px);
+    padding: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    background: var(--pico-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+    z-index: 1100;
+}
+
+.tooltip-menu-panel .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--pico-contrast);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+    transition: background-color 0.15s ease;
+}
+
+.tooltip-menu-panel .menu-item:hover {
+    background: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}

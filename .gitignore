@@ -1,0 +1,19 @@
+# secrets — never commit these
+.env
+.env.*
+*.env
+!.env.example
+!.env.template
+
+# build artifacts
+/bin/
+/dist/
+/extension.zip
+/extension.crx
+/extension.pem
+*.pem
+/web/mykeys.wasm
+/web/wasm_exec.js
+
+# system files
+.DS_Store

@@ -1,0 +1,173 @@
+.vault-list {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 0;
+}
+
+@media only screen and (max-width: 768px) {
+    .vault-list {
+        padding: 1rem 1rem 0;
+    }
+}
+
+/* When the vault list is on screen it becomes the primary content, so the
+   generic empty state below it does not need its full top spacing. */
+main:has(.vault-list) .passwords-empty {
+    padding-top: 1.5rem;
+}
+
+.vault-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.vault-list-header h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--pico-color);
+}
+
+/* Same treatment as .topbar .action so it reads as app chrome, not as a form
+   control. Pico styles every <button> as a primary button, hence the explicit
+   reset and the extra specificity. */
+.vault-list .vault-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: auto;
+    margin: 0;
+    padding: 0.5em 0.75em;
+    appearance: none;
+    border: 0;
+    border-radius: var(--pico-border-radius);
+    background: transparent;
+    box-shadow: none;
+    color: var(--pico-contrast);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.vault-list .vault-refresh:hover {
+    background-color: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}
+
+.vault-list .vault-refresh:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: -2px;
+}
+
+.vault-list-hint {
+    margin: 0;
+    padding: 0.75rem 0;
+    font-size: 0.875rem;
+    text-align: left;
+    color: var(--pico-muted-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.vault-list-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.vault-list-items li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Rows follow the app's table idiom: flat, bottom bordered, primary tint on
+   hover. Pico redefines --pico-* on <button>, so everything is reset here and
+   the selector outranks the generic button rules. */
+.vault-list .vault-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.75rem 0;
+    appearance: none;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+    border-radius: 0;
+    box-shadow: none;
+    /* Pico redefines --pico-color on <button> (primary inverse), so inherit the
+       page text colour instead of reading the variable here. */
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.vault-list .vault-item:hover {
+    background: color-mix(in srgb, var(--pico-primary) 6%, transparent);
+}
+
+.vault-list .vault-item:focus-visible {
+    outline: 2px solid var(--pico-primary);
+    outline-offset: -2px;
+}
+
+.vault-list .vault-item > svg {
+    flex-shrink: 0;
+    color: var(--pico-muted-color);
+}
+
+.vault-item-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.vault-item-title {
+    font-weight: 500;
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vault-item-url {
+    font-size: 0.8125rem;
+    color: var(--pico-muted-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Origin tag: where the bookmark opens (this extension vs the web). */
+.vault-list .vault-item-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex: 0 0 auto;
+    margin-left: auto;
+    padding: 0.1rem 0.35rem;
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 0;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--pico-muted-color);
+}
+
+.vault-list .vault-item-tag.local {
+    border-color: color-mix(in srgb, var(--pico-primary) 45%, transparent);
+    color: var(--pico-primary);
+}

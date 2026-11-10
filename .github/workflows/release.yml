@@ -1,40 +1,162 @@
-name: Release new version
+name: Release extension
+
+# The extension version declared in extension/manifest.json is the single source
+# of truth: merging to main publishes `v<version>` unless that tag already
+# exists. To ship a new build, bump the manifest version in the PR.
 
 on:
   push:
-    tags:
-      - '*'
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-extension
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      GOOS: js
-      GOARCH: wasm
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
+      - uses: actions/checkout@v7
         with:
-          go-version: 1.21.x
+          # Tags are needed to know whether this version was already released.
+          fetch-depth: 0
+
+      - name: Read and validate the manifest version
+        id: version
+        run: |
+          set -euo pipefail
+
+          VERSION=$(node -p "require('./extension/manifest.json').version")
+          TAG="v${VERSION}"
+
+          node -e '
+            const version = process.argv[1];
+            if (!/^\d+(\.\d+){0,3}$/.test(version)) {
+              console.error(`Invalid manifest version "${version}": use 1 to 4 dot-separated integers.`);
+              process.exit(1);
+            }
+            const tooBig = version.split(".").some((part) => Number(part) > 65535);
+            if (tooBig) {
+              console.error(`Invalid manifest version "${version}": every part must be <= 65535.`);
+              process.exit(1);
+            }
+          ' "$VERSION"
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$TAG is already published (tag exists); nothing to do."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Publishing $TAG"
+          fi
+
+      - uses: actions/setup-go@v7
+        if: steps.version.outputs.publish == 'true'
+        with:
+          go-version-file: go.mod
           cache: true
-      - name: Build wasm
-        run: |
-          go build -o ./web/mykeys.wasm ./cmd/webassembly/main.go
-      - name: Copy go wasm js engine
-        run: |
-          cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
-      - name: Generate checksum
-        uses: jmgilman/actions-generate-checksum@v1
-        with: 
-          output: sha256_checksums.txt
-          patterns: |
-            web/mykeys.wasm
-            web/wasm_exec.js
-      - name: Upload assets
-        uses: softprops/action-gh-release@v1
-        id: upload-release-asset
+
+      - uses: actions/setup-node@v7
+        if: steps.version.outputs.publish == 'true'
         with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        if: steps.version.outputs.publish == 'true'
+        run: npm --prefix ./web ci
+
+      - name: Build and package the extension
+        if: steps.version.outputs.publish == 'true'
+        run: make extension-zip
+
+      # Signs the package with a stable key so the extension ID never changes
+      # between releases. The CRX is not installable from a plain download on
+      # stable Chrome (Windows/macOS); it is meant for managed deployments.
+      - name: Pack a signed CRX
+        if: steps.version.outputs.publish == 'true'
+        env:
+          EXTENSION_KEY: ${{ secrets.EXTENSION_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${EXTENSION_KEY}" ]; then
+            echo "::warning::EXTENSION_KEY secret is missing; skipping the signed CRX"
+            exit 0
+          fi
+
+          printf '%s' "$EXTENSION_KEY" | base64 -d > "$RUNNER_TEMP/extension.pem"
+          # Chrome requires a PKCS#8 PEM ("BEGIN PRIVATE KEY"); accept any RSA
+          # PEM in the secret and normalise it.
+          openssl pkcs8 -topk8 -nocrypt \
+            -in "$RUNNER_TEMP/extension.pem" \
+            -out "$RUNNER_TEMP/extension.pk8.pem"
+
+          CHROME=$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)
+          if [ -z "$CHROME" ]; then
+            echo "::warning::No Chrome binary found; skipping the signed CRX"
+            rm -f "$RUNNER_TEMP/extension.pem" "$RUNNER_TEMP/extension.pk8.pem"
+            exit 0
+          fi
+
+          "$CHROME" --no-message-box \
+            --pack-extension="$PWD/dist/extension" \
+            --pack-extension-key="$RUNNER_TEMP/extension.pk8.pem"
+
+          mv ./dist/extension.crx ./extension.crx
+          if ! head -c 4 ./extension.crx | grep -q 'Cr24'; then
+            echo "::error::The generated CRX is not valid"
+            exit 1
+          fi
+
+          # Stable extension ID derived from the signing key (useful for docs
+          # and enterprise policies).
+          openssl rsa -in "$RUNNER_TEMP/extension.pem" -pubout -outform DER 2>/dev/null |
+            node -e '
+              const crypto = require("crypto");
+              const chunks = [];
+              process.stdin.on("data", (chunk) => chunks.push(chunk));
+              process.stdin.on("end", () => {
+                const hex = crypto.createHash("sha256")
+                  .update(Buffer.concat(chunks))
+                  .digest("hex")
+                  .slice(0, 32);
+                const id = [...hex].map((h) => String.fromCharCode(97 + parseInt(h, 16))).join("");
+                console.log(`Extension ID: ${id}`);
+              });
+            '
+
+          rm -f "$RUNNER_TEMP/extension.pem" "$RUNNER_TEMP/extension.pk8.pem"
+
+      - name: Generate checksums
+        if: steps.version.outputs.publish == 'true'
+        run: |
+          set -euo pipefail
+          (cd ./dist/extension && sha256sum mykeys.wasm wasm_exec.js) > /tmp/checksums.txt
+          sha256sum extension.zip >> /tmp/checksums.txt
+          if [ -f ./extension.crx ]; then
+            sha256sum extension.crx >> /tmp/checksums.txt
+          fi
+          mv /tmp/checksums.txt ./sha256_checksums.txt
+          cat ./sha256_checksums.txt
+
+      - name: Publish the release
+        if: steps.version.outputs.publish == 'true'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false
           files: |
+            extension.zip
+            extension.crx
             sha256_checksums.txt
-            web/mykeys.wasm
-            web/wasm_exec.js

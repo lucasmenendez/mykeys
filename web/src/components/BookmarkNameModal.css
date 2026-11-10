@@ -1,0 +1,31 @@
+.bookmark-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.bookmark-name label {
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.bookmark-name input {
+    margin-bottom: 0;
+}
+
+.bookmark-name-hint {
+    margin: 0;
+    color: var(--pico-muted-color);
+    font-size: 0.8125rem;
+}
+
+.bookmark-name-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.bookmark-name-actions button {
+    width: auto;
+    margin: 0;
+}

@@ -6,7 +6,9 @@
 
 # 🔐 MyKeys.live
 
-MyKeys is a simple web app to **manage collections of passwords as bookmarks**. It transforms your **encrypted passwords into a long url** that you can add to bookmarks to open it later and share with your friends. It also support to download or copy the passwords as a file and open or paste them later.
+MyKeys is a simple web app to **manage collections of passwords as bookmarks**. It transforms your **encrypted passwords into a long url** that you can add to bookmarks to open it later and share with your friends. It also supports downloading or copying the passwords as a file and opening or pasting them later.
+
+The web app is a single-page app built with SolidJS. A Go core compiled to WebAssembly runs entirely in your browser — encrypting and decrypting your vault on your device. Your passwords never leave your browser; there is no server storing anything.
 
 ## Features
 The [mykeys.live](https://mykeys.live/) webapp allows to manage your passwords in a secure way, using two levels of security:
@@ -18,20 +20,29 @@ The passwords stored will include:
  - 👤 **Username**: The account identifier of the credential into its service. *Ex.: 'cruz.cafune@mecen-ent.com'*.
  - 🔑 **Password**: The account password of the credential. *Ex.: 'M4r4cuch0'*.
 
-#### Securized with a master password
-To open or save your passwors, you must provide a passphrase used as a **master password** to encrypt them. The passphrase has the following requirements:
- - At least one letter.
- - At least one number.
+#### Secured with a master passphrase
+To open or save your passwords, you must provide a passphrase used as a **master password** to encrypt them. The passphrase has the following requirements:
  - At least eight characters.
+ - At least one lowercase letter.
+ - At least one UPPERCASE letter.
+ - At least one number.
+
+#### Encrypted format
+MyKeys stores your passwords encrypted and base64url-encoded:
+ - **AES-256-GCM** — a modern authenticated cipher: it both encrypts and detects tampering.
+ - The key is derived from your passphrase, and every encryption uses a fresh random nonce, so the same data never encrypts to the same bytes twice.
+ - The result is encoded as URL-safe base64 (`base64url`), ready to be carried as a bookmark or a file.
+
+Since the key is derived directly from the passphrase, a long, random passphrase is what keeps the vault safe.
 
 #### Credentials data as URL
-When you store your passwords as bookmark, the passwords are encrypted with your passphrease and encoded in base64 (url compatible version), and they are placed as a part of the url then. With this solution you can access to your passwords in any browser that has your bookmarks synced.
+When you save your passwords as a bookmark, the encrypted payload is placed in the URL query parameter (`?data=`). With this solution you can access your passwords in any browser that has your bookmarks synced, or share the link.
 
 ## Interfaces
 
-Mykeys has both interfaces to interact with your passwords, and there are totally interoperable, which means that the passwords created with one of them are compatible with the other one.
+MyKeys has two interoperable interfaces: the web app and the CLI. Passwords created with one can be opened by the other.
 
-This is possible because the web app uses the same basecode that the CLI, writted in Go and compiled with WebAssembly to be used on browsers.
+This is possible because both interfaces use the same Go core. The web app compiles that core to WebAssembly.
 
 ### ⌨️ CLI
 A simple console tool to manage your passwords files. It does not store any information or data, it is just a cli to manage your encrypted passwords.
@@ -65,26 +76,45 @@ Options:
 ```
 
 ### 📱 Web app
-A Vue web app that allows to upload your passwords or open it from a URL. It does not store any information, it is just an interface to decrypt and manage your passwords from browsers.
+The web app opens passwords from a URL, pasted text, a bookmark, or a file. It does not store information locally or on a server. Everything runs in the browser — the passphrase decrypts the vault locally and nothing is uploaded.
 
 #### Build it
 ```sh
-# build for webassembly and save the result in the ./web folder
-GOOS=js GOARCH=wasm go build -o ./web/main.wasm ./cmd/webassembly
+# build the WebAssembly core (writes web/public/mykeys.wasm and wasm_exec.js)
+make web
 
-# or:
-# make web
+# build the web app (requires Node 24+; produces the static output in web/.output/public)
+cd web && npm ci && npm run build
 ```
 
 #### Demo time!
 ```sh
-# copy wasm_exec.js from yout go installation to ./web folder
-cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" ./web
-
-# go to ./web folder and start an local http server on 5500 port
-cd ./web && python3 -m http.server 5500
+# build and serve the app on port 5500
+make serve
 ```
 Go to [localhost:5500](http://127.0.0.1:5500) to check a demo.
+
+### 🧩 Browser extension
+The Chrome extension runs **the very same UI** as the web app inside the side panel. It lists the bookmarks that hold a vault (`?data=…`), opens them with your passphrase, and locking a vault takes you back to that list so you can reopen any bookmark. When you save changes, **Update bookmark** points the bookmark you opened at the new version of the vault. New vaults are bookmarked with a split button (like GitHub's merge strategies) that picks between **online** (`mykeys.live`, works anywhere) and **locally** (`chrome-extension://…`, works offline), asking for the bookmark name in a dialog. Local bookmarks open a small hand-off page: Chrome does not let an extension open its side panel without a click, so it asks for one and then loads the vault in the panel.
+
+#### Build it
+```sh
+# WebAssembly core + web UI, assembled into dist/extension
+make extension
+
+# optional: package it as ./extension.zip
+make extension-zip
+
+# optional: sign it as ./extension.crx (same key as the release secret)
+make crx CHROME_KEY=extension.pem
+```
+
+#### Load it
+1. Open `chrome://extensions` and enable *Developer mode*.
+2. *Load unpacked* and select `dist/extension`.
+3. Click the toolbar icon and the side panel opens directly (Chrome 116+).
+
+Each release also ships a self-signed `extension.crx` for managed deployments (policies such as `ExtensionInstallForcelist`). Chrome on stable Windows/macOS refuses to install CRX files downloaded from a plain link, so for regular users the zip (or the Chrome Web Store) is the way to go.
 
 ## Credits
 

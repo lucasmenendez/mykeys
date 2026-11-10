@@ -1,0 +1,99 @@
+.help-page {
+    min-height: 100%;
+    background: var(--pico-background-color);
+    color: var(--pico-color);
+}
+
+.help-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: var(--topbar-height);
+    padding: 0 1.5em;
+    background: var(--pico-background-color);
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.help-topbar .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0;
+    padding: 0.5em 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--pico-contrast);
+    font: inherit;
+    cursor: pointer;
+    border-radius: var(--pico-border-radius);
+}
+
+.help-topbar .back:hover {
+    background-color: color-mix(in srgb, var(--pico-contrast) 10%, transparent);
+}
+
+.help-topbar .brand {
+    font-weight: 600;
+}
+
+.help-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+}
+
+.help-content h1 {
+    margin-bottom: 0.25rem;
+}
+
+.help-content .lead {
+    margin-top: 0;
+    color: var(--pico-muted-color);
+    font-size: 1.1em;
+}
+
+.help-section {
+    margin-top: 2.25rem;
+}
+
+.help-section h2 {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--pico-muted-border-color);
+}
+
+.help-section p {
+    max-width: 60ch;
+}
+
+.help-section ol {
+    padding-left: 1.5rem;
+}
+
+.help-section li {
+    margin-bottom: 0.5rem;
+}
+
+.help-section ul.plain {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 70ch;
+}
+
+.help-section ul.plain li {
+    margin-bottom: 0.6rem;
+}
+
+.help-footer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 3rem;
+    color: var(--pico-muted-color);
+    font-size: 0.9em;
+}
